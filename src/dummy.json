@@ -1,0 +1,142 @@
+[
+    {
+        "isim": "Ali",
+        "soyisim": "Yılmaz",
+        "id": "123-45-6789",
+        "telefon": "555-123-4567",
+        "email": "ali@example.com"
+    },
+    {
+        "isim": "Ayşe",
+        "soyisim": "Kaya",
+        "id": "234-56-7890",
+        "telefon": "555-234-5678",
+        "email": "ayse@example.com"
+    },
+    {
+        "isim": "Mehmet",
+        "soyisim": "Demir",
+        "id": "345-67-8901",
+        "telefon": "555-345-6789",
+        "email": "mehmet@example.com"
+    },
+    {
+        "isim": "Fatma",
+        "soyisim": "Öztürk",
+        "id": "456-78-9012",
+        "telefon": "555-456-7890",
+        "email": "fatma@example.com"
+    },
+    {
+        "isim": "Mustafa",
+        "soyisim": "Arslan",
+        "id": "567-89-0123",
+        "telefon": "555-567-8901",
+        "email": "mustafa@example.com"
+    },
+    {
+        "isim": "Zeynep",
+        "soyisim": "Koç",
+        "id": "678-90-1234",
+        "telefon": "555-678-9012",
+        "email": "zeynep@example.com"
+    },
+    {
+        "isim": "Ahmet",
+        "soyisim": "Şahin",
+        "id": "789-01-2345",
+        "telefon": "555-789-0123",
+        "email": "ahmet@example.com"
+    },
+    {
+        "isim": "Selin",
+        "soyisim": "Yıldız",
+        "id": "890-12-3455",
+        "telefon": "555-890-1234",
+        "email": "selin@example.com"
+    },
+    {
+        "isim": "Emir",
+        "soyisim": "Çelik",
+        "id": "901-23-4567",
+        "telefon": "555-901-2345",
+        "email": "emir@example.com"
+    },
+    {
+        "isim": "Ece",
+        "soyisim": "Gündüz",
+        "id": "012-34-5678",
+        "telefon": "555-012-3456",
+        "email": "ece@example.com"
+    },
+    {
+        "isim": "Murat",
+        "soyisim": "Aydın",
+        "id": "210-98-7654",
+        "telefon": "555-210-9876",
+        "email": "murat@example.com"
+    },
+    {
+        "isim": "Deniz",
+        "soyisim": "Şimşek",
+        "id": "321-09-8765",
+        "telefon": "555-321-0987",
+        "email": "deniz@example.com"
+    },
+    {
+        "isim": "Elif",
+        "soyisim": "Demirci",
+        "id": "432-10-9876",
+        "telefon": "555-432-1098",
+        "email": "elif@example.com"
+    },
+    {
+        "isim": "Onur",
+        "soyisim": "Bulut",
+        "id": "543-21-0987",
+        "telefon": "555-543-2109",
+        "email": "onur@example.com"
+    },
+    {
+        "isim": "Zehra",
+        "soyisim": "Çelik",
+        "id": "654-32-1098",
+        "telefon": "555-654-3210",
+        "email": "zehra@example.com"
+    },
+    {
+        "isim": "Can",
+        "soyisim": "Özdemir",
+        "id": "765-43-2109",
+        "telefon": "555-765-4321",
+        "email": "can@example.com"
+    },
+    {
+        "isim": "Melis",
+        "soyisim": "Yılmaz",
+        "id": "876-54-3210",
+        "telefon": "555-876-5432",
+        "email": "melis@example.com"
+    },
+    {
+        "isim": "Kerem",
+        "soyisim": "Ateş",
+        "id": "987-65-4321",
+        "telefon": "555-987-6543",
+        "email": "kerem@example.com"
+    },
+    {
+        "isim": "Aslı",
+        "soyisim": "Kurt",
+        "id": "098-76-5432",
+        "telefon": "555-098-7654",
+        "email": "asli@example.com"
+    },
+    {
+        "isim": "Efe",
+        "soyisim": "Öztürk",
+        "id": "890-12-3456",
+        "telefon": "555-890-1234",
+        "email": "efe@example.com"
+    }
+]
