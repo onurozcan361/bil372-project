@@ -1,10 +1,12 @@
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { AppBar, Box, Tab, Tabs } from '@mui/material';
-import { useState } from 'react';
-import { StudentTab } from './TabContexts/StudentTab';
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { AppBar, Box, Tab, Tabs } from "@mui/material";
+import { useState } from "react";
+import { StudentTab } from "./TabContexts/StudentTab";
+import { TeacherTab } from "./TabContexts/TeacherTab";
+import { CourseTab } from "./TabContexts/CourseTab";
 
 export const Page = () => {
-	const [value, setValue] = useState('1');
+	const [value, setValue] = useState("1");
 
 	const handleChange = (event: React.SyntheticEvent, newValue: string) => {
 		setValue(newValue);
@@ -14,9 +16,9 @@ export const Page = () => {
 		<Box
 			sx={{
 				flexGrow: 1,
-				bgcolor: 'background.paper',
-				display: 'flex',
-				height: '100%',
+				bgcolor: "background.paper",
+				display: "flex",
+				height: "100%",
 			}}
 		>
 			<TabContext value={value}>
@@ -38,8 +40,12 @@ export const Page = () => {
 				<TabPanel value="1">
 					<StudentTab></StudentTab>
 				</TabPanel>
-				<TabPanel value="2">Ogretmenler</TabPanel>
-				<TabPanel value="3">Ders</TabPanel>
+				<TabPanel value="2">
+					<TeacherTab></TeacherTab>
+				</TabPanel>
+				<TabPanel value="3">
+					<CourseTab></CourseTab>
+				</TabPanel>
 				<TabPanel value="4">Idari Personeller</TabPanel>
 				<TabPanel value="5">Temizlik Gorevlileri</TabPanel>
 				<TabPanel value="6">Stoklar</TabPanel>

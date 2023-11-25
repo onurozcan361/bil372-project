@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import dummyData from '../dummy.json';
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import axios from 'axios';
@@ -27,10 +28,12 @@ const columns: GridColDef[] = [
 					});
 			};
 
-			return <button onClick={handleClick}>Detayli Bilgi</button>;
+			return <Button onClick={handleClick}>Detayli Bilgi</Button>;
 		},
 	},
 ];
-export const StudentTab = () => {
+const StudentTab = () => {
 	return <DataGrid rows={dummyData} columns={columns}></DataGrid>;
 };
+
+export default StudentTab;

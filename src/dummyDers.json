@@ -1,0 +1,27 @@
+[
+    {
+        "id" : "ING1",
+        "dersAdi": "Ingilizce",
+        "dersSaati": 4,
+        "dersTalebi": 20
+        
+    },
+    {
+        "id" : "ALM1",
+        "dersAdi": "Almanca",
+        "dersSaati": 4,
+        "dersTalebi": 10
+    },
+    {
+        "id" : "MAT1",
+        "dersAdi": "Matematik",
+        "dersSaati": 8,
+        "dersTalebi": 20
+    },
+    {
+        "id" : "RK1",
+        "dersAdi": "Robotik Kodlama",
+        "dersSaati": 6,
+        "dersTalebi": 15
+    }
+]

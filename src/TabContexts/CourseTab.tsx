@@ -1,14 +1,14 @@
 import { Button } from "@mui/material";
-import dummyData from "../dummy.json";
+import dummyDers from "../dummyDers.json";
 import { DataGrid, GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import axios from "axios";
 
 const columns: GridColDef[] = [
-	{ field: "isim", headerName: "Isim", width: 200 },
-	{ field: "soyisim", headerName: "Soyisim", width: 200 },
-	{ field: "id", headerName: "SSN", width: 200 },
-	{ field: "telefon", headerName: "telefon", width: 200 },
-	{ field: "email", headerName: "E-Mail", width: 200 },
+	{ field: "id", headerName: "DersKodu", width: 200 },
+	{ field: "dersAdi", headerName: "Ders Adi", width: 200 },
+	{ field: "dersSaati", headerName: "Haftalik Ders Saati", width: 200 },
+	{ field: "dersTalebi", headerName: "Ders Talebi", width: 200 },
+
 	{
 		field: "actions",
 		headerName: "İşlemler",
@@ -33,6 +33,8 @@ const columns: GridColDef[] = [
 	},
 ];
 
-export const TeacherTab = () => {
-	return <DataGrid columns={columns} rows={dummyData}></DataGrid>;
+const CourseTab = () => {
+	return <DataGrid rows={dummyDers} columns={columns}></DataGrid>;
 };
+
+export default CourseTab;
