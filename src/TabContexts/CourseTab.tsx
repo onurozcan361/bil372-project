@@ -33,8 +33,6 @@ const columns: GridColDef[] = [
 	},
 ];
 
-const CourseTab = () => {
+export const CourseTab = () => {
 	return <DataGrid rows={dummyDers} columns={columns}></DataGrid>;
 };
-
-export default CourseTab;
