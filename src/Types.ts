@@ -16,6 +16,7 @@ export interface DetailedStudent extends Student {
 
 export interface Employee {
   id: string;
+  name: string;
   surname: string;
   email: string;
   phoneNumber: string;
