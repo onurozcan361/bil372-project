@@ -38,18 +38,8 @@ const initStudent: DetailedStudent = {
 };
 
 const StudentTab = () => {
-  const [selectedStudent, setSelectedStudent] = useState<DetailedStudent>({
-    name: '',
-    surname: '',
-    id: '',
-    phoneNumber: '',
-    email: '',
-    address: '',
-    birthDate: '',
-    isActive: false,
-    registrationDate: '',
-    custodianId: '',
-  });
+  const [selectedStudent, setSelectedStudent] =
+    useState<DetailedStudent>(initStudent);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [students, setStudents] = useState<Student[]>(dummyData as Student[]);
 
@@ -124,11 +114,19 @@ const StudentTab = () => {
           handleUpdateClick(params.row);
         };
 
+        const handleDeleteClick = () => {
+          //backend e delete requesti atilacak
+          const updatedStudents = students.filter(
+            (student) => student.id !== params.row.id
+          );
+          setStudents(updatedStudents);
+        };
+
         return (
           <>
             <Button onClick={handleEditClick}>Düzenle</Button>
             <Button onClick={() => {}}>Detayli Bilgi</Button>
-            <Button onClick={() => {}} color="error">
+            <Button onClick={handleDeleteClick} color="error">
               Sil
             </Button>
           </>
