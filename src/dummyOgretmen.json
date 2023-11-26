@@ -1,0 +1,142 @@
+[
+    {
+        "name": "Ali",
+        "surname": "Yılmaz",
+        "id": "123-45-6789",
+        "phoneNumber": "555-123-4567",
+        "email": "ali@example.com"
+    },
+    {
+        "name": "Ayşe",
+        "surname": "Kaya",
+        "id": "234-56-7890",
+        "phoneNumber": "555-234-5678",
+        "email": "ayse@example.com"
+    },
+    {
+        "name": "Mehmet",
+        "surname": "Demir",
+        "id": "345-67-8901",
+        "phoneNumber": "555-345-6789",
+        "email": "mehmet@example.com"
+    },
+    {
+        "name": "Fatma",
+        "surname": "Öztürk",
+        "id": "456-78-9012",
+        "phoneNumber": "555-456-7890",
+        "email": "fatma@example.com"
+    },
+    {
+        "name": "Mustafa",
+        "surname": "Arslan",
+        "id": "567-89-0123",
+        "phoneNumber": "555-567-8901",
+        "email": "mustafa@example.com"
+    },
+    {
+        "name": "Zeynep",
+        "surname": "Koç",
+        "id": "678-90-1234",
+        "phoneNumber": "555-678-9012",
+        "email": "zeynep@example.com"
+    },
+    {
+        "name": "Ahmet",
+        "surname": "Şahin",
+        "id": "789-01-2345",
+        "phoneNumber": "555-789-0123",
+        "email": "ahmet@example.com"
+    },
+    {
+        "name": "Selin",
+        "surname": "Yıldız",
+        "id": "890-12-3455",
+        "phoneNumber": "555-890-1234",
+        "email": "selin@example.com"
+    },
+    {
+        "name": "Emir",
+        "surname": "Çelik",
+        "id": "901-23-4567",
+        "phoneNumber": "555-901-2345",
+        "email": "emir@example.com"
+    },
+    {
+        "name": "Ece",
+        "surname": "Gündüz",
+        "id": "012-34-5678",
+        "phoneNumber": "555-012-3456",
+        "email": "ece@example.com"
+    },
+    {
+        "name": "Murat",
+        "surname": "Aydın",
+        "id": "210-98-7654",
+        "phoneNumber": "555-210-9876",
+        "email": "murat@example.com"
+    },
+    {
+        "name": "Deniz",
+        "surname": "Şimşek",
+        "id": "321-09-8765",
+        "phoneNumber": "555-321-0987",
+        "email": "deniz@example.com"
+    },
+    {
+        "name": "Elif",
+        "surname": "Demirci",
+        "id": "432-10-9876",
+        "phoneNumber": "555-432-1098",
+        "email": "elif@example.com"
+    },
+    {
+        "name": "Onur",
+        "surname": "Bulut",
+        "id": "543-21-0987",
+        "phoneNumber": "555-543-2109",
+        "email": "onur@example.com"
+    },
+    {
+        "name": "Zehra",
+        "surname": "Çelik",
+        "id": "654-32-1098",
+        "phoneNumber": "555-654-3210",
+        "email": "zehra@example.com"
+    },
+    {
+        "name": "Can",
+        "surname": "Özdemir",
+        "id": "765-43-2109",
+        "phoneNumber": "555-765-4321",
+        "email": "can@example.com"
+    },
+    {
+        "name": "Melis",
+        "surname": "Yılmaz",
+        "id": "876-54-3210",
+        "phoneNumber": "555-876-5432",
+        "email": "melis@example.com"
+    },
+    {
+        "name": "Kerem",
+        "surname": "Ateş",
+        "id": "987-65-4321",
+        "phoneNumber": "555-987-6543",
+        "email": "kerem@example.com"
+    },
+    {
+        "name": "Aslı",
+        "surname": "Kurt",
+        "id": "098-76-5432",
+        "phoneNumber": "555-098-7654",
+        "email": "asli@example.com"
+    },
+    {
+        "name": "Efe",
+        "surname": "Öztürk",
+        "id": "890-12-3456",
+        "phoneNumber": "555-890-1234",
+        "email": "efe@example.com"
+    }
+]
