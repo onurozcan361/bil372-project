@@ -77,7 +77,7 @@ const StudentTab = () => {
     setOpenAddDialog(true);
   };
 
-  const handleAddStudentClose = () => {
+  const handleCloseAddDialog = () => {
     setOpenAddDialog(false);
   };
 
@@ -130,7 +130,7 @@ const StudentTab = () => {
   return (
     <>
       <Button onClick={handleAddStudentClick}>Ekle</Button>
-      <Dialog open={openAddDialog} onClose={handleAddStudentClose}>
+      <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
         <DialogTitle>Öğrenci Ekleme</DialogTitle>
         <DialogContent>
           <>
@@ -150,7 +150,7 @@ const StudentTab = () => {
           </>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseUpdateDialog}>İptal</Button>
+          <Button onClick={handleCloseAddDialog}>İptal</Button>
           <Button onClick={handleAddStudentSave}>Kaydet</Button>
         </DialogActions>
       </Dialog>
