@@ -1,27 +1,30 @@
 [
     {
-        "id" : "ING1",
-        "dersAdi": "Ingilizce",
-        "dersSaati": 4,
-        "dersTalebi": 20
-        
+        "id" : "ING001",
+        "name": "Ingilizce - 1",
+        "weeklyHour": 4,
+        "demand": 20,
+        "teacherId": "123-45-6789"
     },
     {
-        "id" : "ALM1",
-        "dersAdi": "Almanca",
-        "dersSaati": 4,
-        "dersTalebi": 10
+        "id" : "ALM001",
+        "name": "Almanca - 1",
+        "weeklyHour": 4,
+        "demand": 10,
+        "teacherId": "321-45-6798"
     },
     {
-        "id" : "MAT1",
-        "dersAdi": "Matematik",
-        "dersSaati": 8,
-        "dersTalebi": 20
+        "id" : "MAT001",
+        "name": "Matematik - 1",
+        "weeklyHour": 8,
+        "demand": 20,
+        "teacherId": "123-45-9876"
     },
     {
-        "id" : "RK1",
-        "dersAdi": "Robotik Kodlama",
-        "dersSaati": 6,
-        "dersTalebi": 15
+        "id" : "RBK001",
+        "name": "Robotik Kodlama - 1",
+        "weeklyHour": 6,
+        "demand": 15,
+        "teacherId": "543-45-6789"
     }
 ]

@@ -38,16 +38,15 @@ const initStudent: DetailedStudent = {
 };
 
 const StudentTab = () => {
-  const [selectedStudent, setSelectedStudent] =
-    useState<DetailedStudent>(initStudent);
-  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<DetailedStudent>(initStudent);
+  const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [students, setStudents] = useState<Student[]>(dummyData as Student[]);
 
-  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newStudent, setNewStudent] = useState<DetailedStudent>(initStudent);
 
   const handleUpdateClick = (student: Student) => {
-    const detailedStudent: DetailedStudent = dummyData.find(
+    const detailedStudent: DetailedStudent = students.find(
       (object) => object.id === student.id
     ) as DetailedStudent;
     setSelectedStudent(detailedStudent);
@@ -68,16 +67,13 @@ const StudentTab = () => {
     console.log('Değişiklikler kaydedildi:', selectedStudent);
     setStudents((prevStudents) =>
       prevStudents.map((student) =>
-        student.id === selectedStudent.id
-          ? { ...student, ...selectedStudent }
-          : student
+        student.id === selectedStudent.id ? { ...student, ...selectedStudent } : student
       )
     );
     setOpenUpdateDialog(false);
   };
 
   const handleAddStudentClick = () => {
-    console.log(students);
     setOpenAddDialog(true);
   };
 
@@ -85,16 +81,14 @@ const StudentTab = () => {
     setOpenAddDialog(false);
   };
 
-  const handleAddStudentInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleAddStudentInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewStudent({ ...newStudent, [name]: value });
   };
 
   const handleAddStudentSave = () => {
     //backend e request atilicak
-    setStudents((prevStudends) => [...prevStudends, newStudent as Student]);
+    setStudents((prevStudents) => [...prevStudents, newStudent as Student]);
     setNewStudent(initStudent);
     setOpenAddDialog(false);
   };
@@ -116,9 +110,7 @@ const StudentTab = () => {
 
         const handleDeleteClick = () => {
           //backend e delete requesti atilacak
-          const updatedStudents = students.filter(
-            (student) => student.id !== params.row.id
-          );
+          const updatedStudents = students.filter((student) => student.id !== params.row.id);
           setStudents(updatedStudents);
         };
 
