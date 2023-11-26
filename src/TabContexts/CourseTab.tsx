@@ -100,7 +100,7 @@ const CourseTab = () => {
     setOpenAddDialog(true);
   };
 
-  const handleAddCourseClose = () => {
+  const handleCloseAddDialog = () => {
     setOpenAddDialog(false);
   };
 
@@ -119,7 +119,7 @@ const CourseTab = () => {
   return (
     <>
       <Button onClick={handleAddCourseClick}>Ekle</Button>
-      <Dialog open={openAddDialog} onClose={handleAddCourseClose}>
+      <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
         <DialogTitle>Öğrenci Ekleme</DialogTitle>
         <DialogContent>
           <>
@@ -139,7 +139,7 @@ const CourseTab = () => {
           </>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseUpdateDialog}>İptal</Button>
+          <Button onClick={handleCloseAddDialog}>İptal</Button>
           <Button onClick={handleAddCourseSave}>Kaydet</Button>
         </DialogActions>
       </Dialog>
