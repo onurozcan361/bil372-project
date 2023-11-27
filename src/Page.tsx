@@ -6,6 +6,7 @@ import TeacherTab from './TabContexts/TeacherTab';
 import CourseTab from './TabContexts/CourseTab';
 import AdministrativeStaff from './TabContexts/AdministrativeStaffTab';
 import CleaningStaffTab from './TabContexts/CleaningStaffTab';
+import StockTab from './TabContexts/StockTab';
 
 export const Page = () => {
   const [value, setValue] = useState('1');
@@ -49,7 +50,9 @@ export const Page = () => {
         <TabPanel value="5">
           <CleaningStaffTab />
         </TabPanel>
-        <TabPanel value="6">Stoklar</TabPanel>
+        <TabPanel value="6">
+          <StockTab />
+        </TabPanel>
         <TabPanel value="7">Giderler</TabPanel>
       </TabContext>
     </Box>
