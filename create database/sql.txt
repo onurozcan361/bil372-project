@@ -1,0 +1,111 @@
+CREATE TABLE veli (
+    veli_id char(10) PRIMARY KEY,
+    veli_adi varchar(50),
+    veli_soyadi varchar(50),
+    veli_email varchar(50) UNIQUE,
+    veli_telefon_no char(10) UNIQUE
+);
+
+CREATE Table ogrenci (
+    ogrenci_id char(10) PRIMARY KEY,
+    ogrenci_adi VARCHAR(50),
+    ogrenci_soyadi VARCHAR(50),
+    ogrenci_email VARCHAR(50) UNIQUE,
+    ogrenci_telefon_no CHAR(10) UNIQUE,
+    ogrenci_dogum_tarihi Date,
+    ogrenci_adres varchar(255),
+    ogrenci_kayit_tarihi Date,
+    ogrenci_aktif_mi boolean,
+    ogrenci_veli_id CHAR(10),
+    FOREIGN KEY (ogrenci_veli_id) REFERENCES veli(veli_id)
+);
+
+CREATE TABLE gider (
+    gider_id int PRIMARY KEY AUTO_INCREMENT,
+    tutar LONG,
+    gider_turu varchar(20),
+    tarih date
+);
+
+CREATE TABLE calisan (
+    calisan_id char(10) PRIMARY KEY,
+    calisan_ad VARCHAR(50),
+    calisan_soyad VARCHAR(50),
+    calisan_email VARCHAR(50) UNIQUE,
+    calisan_telefon_no CHAR(10) UNIQUE,
+    calisma_durumu VARCHAR(20),
+    dogum_tarihi DATE,
+    maas DECIMAL(10, 2),
+    is_pozisyonu VARCHAR(20)
+);
+
+CREATE TABLE ogretmen (
+    ogretmen_id char(10) PRIMARY KEY, 
+    verdigi_ders char(30),
+    FOREIGN KEY (ogretmen_id) REFERENCES calisan(calisan_id)
+);
+
+CREATE TABLE temizlik_gorevlisi (
+    temizlik_gorevlisi_id char(10) PRIMARY KEY,
+    FOREIGN KEY (temizlik_gorevlisi_id) REFERENCES calisan(calisan_id)
+);
+
+CREATE TABLE idari_personel (
+    idari_personel_id char(10) PRIMARY KEY,
+    pozisyon varchar(30) NOT NULL,
+    FOREIGN KEY (idari_personel_id) REFERENCES calisan(calisan_id)
+);
+
+CREATE TABLE ders (
+    ders_id char(6),
+    PRIMARY KEY (ders_id),
+    ders_adi varchar(50),
+    ders_saati INT,
+    talep INT,
+    ogretmen_id CHAR(10),
+    FOREIGN KEY (ogretmen_id) REFERENCES ogretmen(ogretmen_id)
+); 
+
+CREATE TABLE ogrenci_musaitlik_zamani (
+    musaitlik_zamani_id int PRIMARY KEY AUTO_INCREMENT,
+    gun varchar(15),
+    baslangic_saati time,
+    bitis_saati time,
+    ogrenci_id CHAR(10) NOT NULL,
+    FOREIGN KEY (ogrenci_id) REFERENCES ogrenci(ogrenci_id)
+);
+
+CREATE TABLE ogrenci_alir_ders (
+    ogrenci_alir_ders_id int PRIMARY KEY AUTO_INCREMENT,
+    ogrenci_id char(10),
+    ders_id char(6), 
+    FOREIGN KEY (ogrenci_id) REFERENCES ogrenci(ogrenci_id),
+    FOREIGN KEY (ders_id) REFERENCES ders(ders_id)
+);
+
+CREATE TABLE malzeme (
+    malzeme_id char(6),
+    PRIMARY KEY (malzeme_id ),
+    miktar INT,
+    malzeme_adi varchar(250),
+    minumum_stok_miktari DECIMAL,
+    fiyat DECIMAL
+);
+
+CREATE TABLE ders_malzemeleri (
+    ders_malzeme_id INT,
+    PRIMARY KEY (ders_malzeme_id),
+    ders_id char(6),
+    malzeme_id char(6),
+    FOREIGN KEY (ders_id) REFERENCES ders(ders_id),
+    FOREIGN KEY (malzeme_id) REFERENCES malzeme(malzeme_id)
+);
+
+CREATE TABLE ogretmen_musaitlik_zamani (
+    musaitlik_zamani_id int PRIMARY KEY AUTO_INCREMENT,
+    gun varchar(15),
+    baslangic_saati time,
+    bitis_saati time,
+    ogretmen_id char(10),
+    FOREIGN KEY (ogretmen_id) REFERENCES ogretmen(ogretmen_id)
+);
