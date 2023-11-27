@@ -10,6 +10,7 @@ import dummyDers from '../dummyDers.json';
 import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { Course } from '../Types';
 import { useState } from 'react';
+import ApiClient from '../ApiClient';
 
 const initCourse: Course = {
   id: '',
@@ -61,6 +62,36 @@ const CourseTab = () => {
     setOpenUpdateDialog(false);
   };
 
+  const handleAddCourseClick = () => {
+    setOpenAddDialog(true);
+  };
+
+  const handleCloseAddDialog = () => {
+    setOpenAddDialog(false);
+  };
+
+  const handleAddCourseInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewCourse({ ...newCourse, [name]: value });
+  };
+
+  const handleAddCourseSave = () => {
+    //backend e request atilicak
+    addCourseRequest(newCourse);
+    setCourses((prevCourses) => [...prevCourses, newCourse as Course]);
+    setNewCourse(initCourse);
+    setOpenAddDialog(false);
+  };
+
+  const addCourseRequest = async (course: Course) => {
+    try {
+      const response = await ApiClient.post('/add_ders', course);
+      console.log('Response', response.data);
+    } catch (error) {
+      console.error('Error sending data', error);
+    }
+  };
+
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'DersKodu', width: 200 },
     { field: 'name', headerName: 'Ders Adi', width: 200 },
@@ -95,26 +126,6 @@ const CourseTab = () => {
       },
     },
   ];
-
-  const handleAddCourseClick = () => {
-    setOpenAddDialog(true);
-  };
-
-  const handleCloseAddDialog = () => {
-    setOpenAddDialog(false);
-  };
-
-  const handleAddCourseInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewCourse({ ...newCourse, [name]: value });
-  };
-
-  const handleAddCourseSave = () => {
-    //backend e request atilicak
-    setCourses((prevCourses) => [...prevCourses, newCourse as Course]);
-    setNewCourse(initCourse);
-    setOpenAddDialog(false);
-  };
 
   return (
     <>
