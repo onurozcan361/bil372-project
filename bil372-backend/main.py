@@ -1,9 +1,18 @@
 from flask import Flask, request, jsonify
-from flaskext.mysql import MySQL
-
+import mysql.connector
 import json
 
+
 app = Flask(__name__)
+
+def get_db_connection():
+    connection = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='7201',
+        database='okul'
+    )
+    return connection
 
 # MySQL configuration
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
@@ -11,9 +20,7 @@ app.config['MYSQL_DATABASE_DB'] = 'okul'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = '7201'
 
-mysql = MySQL(app)
-
-@app.route('/get_students', methods=['GET'])
+##@app.route('/get_students', methods=['GET'])
 def get_data():
     students = get_students()
     custodians = get_custodians()
@@ -558,5 +565,5 @@ def delete_malzeme(malzeme_id):
 
 
 if __name__ == "__main__":
-    print(get_students())
+    print(get_data())
     app.run(debug=True)
