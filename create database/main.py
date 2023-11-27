@@ -9,7 +9,7 @@ fake = Faker()
 host = 'localhost'
 database = 'okul'
 user = 'root'
-password = '7201'
+password = '23644470022Onurozcan.'#bu sifrenin bulundugu her yerde kendi database sifrenizi yazmaniz gerekiyor
 
 def create_veli():
     soyad = fake.last_name()

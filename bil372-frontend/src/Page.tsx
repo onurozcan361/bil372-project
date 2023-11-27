@@ -1,5 +1,5 @@
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { AppBar, Box, Tab, Tabs } from '@mui/material';
+import { TabContext, TabPanel } from '@mui/lab';
+import { Box, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import StudentTab from './TabContexts/StudentTab';
 import TeacherTab from './TabContexts/TeacherTab';
@@ -34,7 +34,6 @@ export const Page = () => {
           <Tab label="Stok" value="6" />
           <Tab label="Gider" value="7" />
         </Tabs>
-
         <TabPanel value="1">
           <StudentTab />
         </TabPanel>
