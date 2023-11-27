@@ -2,8 +2,9 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { AppBar, Box, Tab, Tabs } from '@mui/material';
 import { useState } from 'react';
 import StudentTab from './TabContexts/StudentTab';
-import  TeacherTab  from './TabContexts/TeacherTab';
+import TeacherTab from './TabContexts/TeacherTab';
 import CourseTab from './TabContexts/CourseTab';
+import AdministrativeStaff from './TabContexts/AdministrativeStaffTab';
 
 export const Page = () => {
   const [value, setValue] = useState('1');
@@ -22,12 +23,7 @@ export const Page = () => {
       }}
     >
       <TabContext value={value}>
-        <Tabs
-          onChange={handleChange}
-          variant="scrollable"
-          value={value}
-          orientation="vertical"
-        >
+        <Tabs onChange={handleChange} variant="scrollable" value={value} orientation="vertical">
           <Tab label="Ogrenci" value="1" />
           <Tab label="Ogretmen" value="2" />
           <Tab label="Ders" value="3" />
@@ -38,15 +34,17 @@ export const Page = () => {
         </Tabs>
 
         <TabPanel value="1">
-          <StudentTab></StudentTab>
+          <StudentTab />
         </TabPanel>
         <TabPanel value="2">
-          <TeacherTab></TeacherTab>
+          <TeacherTab />
         </TabPanel>
         <TabPanel value="3">
-          <CourseTab></CourseTab>
+          <CourseTab />
         </TabPanel>
-        <TabPanel value="4">Idari Personeller</TabPanel>
+        <TabPanel value="4">
+          <AdministrativeStaff />
+        </TabPanel>
         <TabPanel value="5">Temizlik Gorevlileri</TabPanel>
         <TabPanel value="6">Stoklar</TabPanel>
         <TabPanel value="7">Giderler</TabPanel>
