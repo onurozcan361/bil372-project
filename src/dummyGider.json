@@ -1,0 +1,32 @@
+[
+  {
+    "id": "001",
+    "fee": 500,
+    "type": "Office Supplies",
+    "date": "2023-01-05"
+  },
+  {
+    "id": "002",
+    "fee": 1200,
+    "type": "Utilities",
+    "date": "2023-02-15"
+  },
+  {
+    "id": "003",
+    "fee": 3000,
+    "type": "Salaries",
+    "date": "2023-03-20"
+  },
+  {
+    "id": "004",
+    "fee": 800,
+    "type": "Maintenance",
+    "date": "2023-04-10"
+  },
+  {
+    "id": "005",
+    "fee": 2000,
+    "type": "Marketing",
+    "date": "2023-05-28"
+  }
+]
