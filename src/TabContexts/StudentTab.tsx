@@ -9,9 +9,9 @@ import {
 import { useState } from 'react';
 import dummyData from '../dummy.json';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { DetailedStudent, Student } from '../Types';
+import { Student } from '../Types';
 
-const fieldLabels: Record<keyof DetailedStudent, string> = {
+const fieldLabels: Record<keyof Student, string> = {
   id: 'ID',
   name: 'Ad',
   surname: 'Soyad',
@@ -24,7 +24,7 @@ const fieldLabels: Record<keyof DetailedStudent, string> = {
   custodianId: 'Veli Id',
 };
 
-const initStudent: DetailedStudent = {
+const initStudent: Student = {
   name: '',
   surname: '',
   id: '',
@@ -38,17 +38,15 @@ const initStudent: DetailedStudent = {
 };
 
 const StudentTab = () => {
-  const [selectedStudent, setSelectedStudent] = useState<DetailedStudent>(initStudent);
+  const [selectedStudent, setSelectedStudent] = useState<Student>(initStudent);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [students, setStudents] = useState<Student[]>(dummyData as Student[]);
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
-  const [newStudent, setNewStudent] = useState<DetailedStudent>(initStudent);
+  const [newStudent, setNewStudent] = useState<Student>(initStudent);
 
   const handleUpdateClick = (student: Student) => {
-    const detailedStudent: DetailedStudent = students.find(
-      (object) => object.id === student.id
-    ) as DetailedStudent;
+    const detailedStudent: Student = students.find((object) => object.id === student.id) as Student;
     setSelectedStudent(detailedStudent);
     setOpenUpdateDialog(true);
   };
@@ -138,9 +136,9 @@ const StudentTab = () => {
               return (
                 <TextField
                   key={key}
-                  label={fieldLabels[key as keyof DetailedStudent]}
+                  label={fieldLabels[key as keyof Student]}
                   name={key}
-                  value={newStudent[key as keyof DetailedStudent]}
+                  value={newStudent[key as keyof Student]}
                   onChange={handleAddStudentInputChange}
                   fullWidth
                   sx={{ marginTop: '16px' }}
@@ -165,9 +163,9 @@ const StudentTab = () => {
                 return (
                   <TextField
                     key={key}
-                    label={fieldLabels[key as keyof DetailedStudent]}
+                    label={fieldLabels[key as keyof Student]}
                     name={key}
-                    value={selectedStudent[key as keyof DetailedStudent]}
+                    value={selectedStudent[key as keyof Student]}
                     onChange={handleInputChange}
                     disabled={key === 'id' || key === 'custodian_id'}
                     fullWidth

@@ -4,9 +4,6 @@ export interface Student {
   surname: string;
   email: string;
   phoneNumber: string;
-}
-
-export interface DetailedStudent extends Student {
   birthDate: string;
   address: string;
   registrationDate: string;
