@@ -11,6 +11,7 @@ import {
   Snackbar,
   TextField,
 } from '@mui/material';
+import ApiClient from '../ApiClient';
 const initCleaningStaff: CleaningStaff = {
   id: '',
   name: '',
@@ -34,17 +35,20 @@ const fieldLabels: Record<keyof CleaningStaff, string> = {
   workStatus: 'Calisma Durumu',
   salary: 'Maas',
 };
-const CleaningStaffTab = () => {
+
+interface CleaningStaffTabProps {
+  cleaningStaffs: CleaningStaff[];
+}
+const CleaningStaffTab = (props: CleaningStaffTabProps) => {
   const [selectedCleaningStaff, setSelectedCleaningStaff] =
     useState<CleaningStaff>(initCleaningStaff);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const [cleaningStaffs, setCleaningStaffs] = useState<CleaningStaff[]>(
-    dummyTemizlik as CleaningStaff[]
-  );
+  const [cleaningStaffs, setCleaningStaffs] = useState<CleaningStaff[]>(props.cleaningStaffs);
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newCleaningStaff, setNewCleaningStaff] = useState<CleaningStaff>(initCleaningStaff);
+  const [openDetailedInfoDialog, setOpenDetailedInfoDialog] = useState<boolean>(false);
 
   const handleUpdateClick = (cleaningStaff: CleaningStaff) => {
     const updatedCleaningStaff: CleaningStaff = cleaningStaffs.find(
@@ -63,17 +67,21 @@ const CleaningStaffTab = () => {
     setSelectedCleaningStaff({ ...selectedCleaningStaff, [name]: value });
   };
 
-  const handleSaveChanges = () => {
-    // Buradan backende kaydedicez yapılan değişiklikleri
-    console.log('Değişiklikler kaydedildi:', selectedCleaningStaff);
-    setCleaningStaffs((prevCleaningStaffs) =>
-      prevCleaningStaffs.map((cleaningStaff) =>
-        cleaningStaff.id === selectedCleaningStaff.id
-          ? { ...cleaningStaff, ...selectedCleaningStaff }
-          : cleaningStaff
-      )
-    );
-    setOpenUpdateDialog(false);
+  const handleSaveChanges = async () => {
+    try {
+      const response = await ApiClient.post('/update_calisan', selectedCleaningStaff);
+      console.log('Değişiklikler kaydedildi:', selectedCleaningStaff, response);
+      setCleaningStaffs((prevCleaningStaffs) =>
+        prevCleaningStaffs.map((cleaningStaff) =>
+          cleaningStaff.id === selectedCleaningStaff.id
+            ? { ...cleaningStaff, ...selectedCleaningStaff }
+            : cleaningStaff
+        )
+      );
+      setOpenUpdateDialog(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleAddCleaningStaffClick = () => {
@@ -89,7 +97,7 @@ const CleaningStaffTab = () => {
     setNewCleaningStaff({ ...newCleaningStaff, [name]: value });
   };
 
-  const handleAddCleaningStaffSave = () => {
+  const handleAddCleaningStaffSave = async () => {
     const isIdExist = cleaningStaffs.some((staff) => staff.id === newCleaningStaff.id);
     const isEmailExist = cleaningStaffs.some((staff) => staff.email === newCleaningStaff.email);
     const isPhoneExist = cleaningStaffs.some(
@@ -99,13 +107,18 @@ const CleaningStaffTab = () => {
     if (isIdExist || isEmailExist || isPhoneExist) {
       setError('Hata: Aynı ID veya e-posta ile Temizlik Personeli zaten mevcut.');
     } else {
-      // Backend'e request atılacak
-      setCleaningStaffs((prevCleaningStaffs) => [
-        ...prevCleaningStaffs,
-        newCleaningStaff as CleaningStaff,
-      ]);
-      setNewCleaningStaff(initCleaningStaff);
-      setOpenAddDialog(false);
+      try {
+        const response = await ApiClient.post('/add_calisan', newCleaningStaff);
+        console.log(response.data);
+        setCleaningStaffs((prevCleaningStaffs) => [
+          ...prevCleaningStaffs,
+          newCleaningStaff as CleaningStaff,
+        ]);
+        setNewCleaningStaff(initCleaningStaff);
+        setOpenAddDialog(false);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -124,18 +137,28 @@ const CleaningStaffTab = () => {
           handleUpdateClick(params.row);
         };
 
-        const handleDeleteClick = () => {
-          //backend e delete requesti atilacak
-          const updatedCleaningStaffs = cleaningStaffs.filter(
-            (cleaningStaff) => cleaningStaff.id !== params.row.id
-          );
-          setCleaningStaffs(updatedCleaningStaffs);
+        const handleDetailsClick = () => {
+          setSelectedCleaningStaff(params.row);
+          setOpenDetailedInfoDialog(true);
+        };
+
+        const handleDeleteClick = async () => {
+          try {
+            const response = await ApiClient.delete(`/delete_calisan/${params.row.id}`);
+            console.log(response.data);
+            const updatedCleaningStaffs = cleaningStaffs.filter(
+              (cleaningStaff) => cleaningStaff.id !== params.row.id
+            );
+            setCleaningStaffs(updatedCleaningStaffs);
+          } catch (error) {
+            console.error(error);
+          }
         };
 
         return (
           <>
             <Button onClick={handleEditClick}>Düzenle</Button>
-            <Button onClick={() => {}}>Detayli Bilgi</Button>
+            <Button onClick={handleDetailsClick}>Detayli Bilgi</Button>
             <Button onClick={handleDeleteClick} color="error">
               Sil
             </Button>
@@ -206,6 +229,34 @@ const CleaningStaffTab = () => {
         <DialogActions>
           <Button onClick={handleCloseUpdateDialog}>İptal</Button>
           <Button onClick={handleSaveChanges}>Kaydet</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openDetailedInfoDialog} onClose={() => setOpenDetailedInfoDialog(false)}>
+        <DialogTitle>
+          <strong>Idari Personel Detaylari</strong>
+        </DialogTitle>
+        <DialogContent>
+          {selectedCleaningStaff && (
+            <>
+              {Object.keys(selectedCleaningStaff).map((key: string) => {
+                return (
+                  <TextField
+                    key={key}
+                    label={fieldLabels[key as keyof CleaningStaff]}
+                    name={key}
+                    value={selectedCleaningStaff[key as keyof CleaningStaff]}
+                    onChange={handleInputChange}
+                    disabled
+                    fullWidth
+                    sx={{ marginTop: '16px' }}
+                  ></TextField>
+                );
+              })}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDetailedInfoDialog(false)}>Kapat</Button>
         </DialogActions>
       </Dialog>
     </>

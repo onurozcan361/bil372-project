@@ -116,6 +116,7 @@ const AdministrativeStaffTab = (props: AdministrativeStaffTabProps) => {
     } else {
       try {
         const response = await ApiClient.post('/add_calisan', newAdministrativeStaff);
+        console.log(response.data);
         setAdministrativeStaffs((prevAdministrativeStaffs) => [
           ...prevAdministrativeStaffs,
           newAdministrativeStaff as AdministrativeStaff,

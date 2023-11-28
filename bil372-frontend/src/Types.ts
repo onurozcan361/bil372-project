@@ -72,7 +72,7 @@ export interface StudentAvailableTime {
   studentId: string;
 }
 
-export interface TeacherAvailiableTime {
+export interface TeacherAvailableTime {
   id: number;
   day: string;
   startTime: string;

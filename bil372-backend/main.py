@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 import mysql.connector
 from flask_cors import CORS
-import json
 
 
 app = Flask(__name__)
@@ -40,26 +39,38 @@ def add_student():
     ogrenci_adres = data['address']
     ogrenci_kayit_tarihi = data['registrationDate']
     ogrenci_aktif_mi = data['isActive']
-    ogrenci_veli_id = data.get('custodianId')
+    veli_bilgileri = data.get('custodian', {})  # Veli bilgileri
+    veli_id = veli_bilgileri.get('id', None)
 
     conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
     cursor = conn.cursor()
 
-    query = """
+    # Veli kontrolü ve ekleme
+    if veli_id:
+        cursor.execute("SELECT COUNT(*) FROM veli WHERE veli_id = %s", (veli_id,))
+        if cursor.fetchone()[0] == 0:  # Veli yoksa ekle
+            veli_adi = veli_bilgileri['name']
+            veli_soyadi = veli_bilgileri['surname']
+            veli_email = veli_bilgileri['email']
+            veli_telefon_no = veli_bilgileri['phoneNumber']
+            cursor.execute("INSERT INTO veli (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no) VALUES (%s, %s, %s, %s, %s)", 
+                           (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no))
+
+    # Öğrenci ekleme
+    cursor.execute("""
     INSERT INTO ogrenci (ogrenci_id, ogrenci_adi, ogrenci_soyadi, ogrenci_email, 
     ogrenci_telefon_no, ogrenci_dogum_tarihi, ogrenci_adres, ogrenci_kayit_tarihi, 
     ogrenci_aktif_mi, ogrenci_veli_id) 
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """
-    cursor.execute(query, (ogrenci_id, ogrenci_adi, ogrenci_soyadi, ogrenci_email,
-                           ogrenci_telefon_no, ogrenci_dogum_tarihi, ogrenci_adres,
-                           ogrenci_kayit_tarihi, ogrenci_aktif_mi, ogrenci_veli_id))
+    """, (ogrenci_id, ogrenci_adi, ogrenci_soyadi, ogrenci_email,
+          ogrenci_telefon_no, ogrenci_dogum_tarihi, ogrenci_adres,
+          ogrenci_kayit_tarihi, ogrenci_aktif_mi, veli_id))
 
     conn.commit()
     cursor.close()
     conn.close()
 
-    return jsonify(success=True, message="Öğrenci başarıyla eklendi.")
+    return jsonify(success=True, message="Öğrenci ve gerekirse veli başarıyla eklendi.")
 
 @app.route('/update_student', methods=['POST'])
 def update_student():
@@ -83,7 +94,7 @@ def update_student():
     veli_email = custodian_data['email']
     veli_telefon_no = custodian_data['phoneNumber']
 
-    conn = mysql.connect()
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
     cursor = conn.cursor()
 
     query_student  = """
@@ -112,7 +123,7 @@ def update_student():
 
 @app.route('/delete_student/<ogrenci_id>', methods=['DELETE'])
 def delete_student(ogrenci_id):
-    conn = mysql.connect()
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
     cursor = conn.cursor()
 
     query_musaitlik = "DELETE FROM ogrenci_musaitlik_zamani WHERE ogrenci_id=%s"
@@ -168,71 +179,6 @@ def get_students():
 
     return student_list
 
-
-@app.route('/add_veli', methods=['POST'])
-def add_veli():
-    data = request.json
-    veli_id = data['id']
-    veli_adi = data['name']
-    veli_soyadi = data['surname']
-    veli_email = data['email']
-    veli_telefon_no = data['phoneNumber']
-
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
-    cursor = conn.cursor()
-
-    query = """
-    INSERT INTO veli (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no) 
-    VALUES (%s, %s, %s, %s, %s)
-    """
-    cursor.execute(query, (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify(success=True, message="Veli başarıyla eklendi.")
-
-@app.route('/update_veli', methods=['POST'])
-def update_veli():
-    data = request.json
-    veli_id = data['id']
-    veli_adi = data['name']
-    veli_soyadi = data['surname']
-    veli_email = data['email']
-    veli_telefon_no = data['phoneNumber']
-
-    conn = mysql.connect()
-    cursor = conn.cursor()
-
-    query = """
-    UPDATE veli SET veli_adi=%s, veli_soyadi=%s, veli_email=%s, veli_telefon_no=%s
-    WHERE veli_id=%s
-    """
-    cursor.execute(query, (veli_adi, veli_soyadi, veli_email, veli_telefon_no, veli_id))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify(success=True, message="Veli başarıyla güncellendi.")
-
-@app.route('/delete_veli/<veli_id>', methods=['DELETE'])
-def delete_veli(veli_id):
-    conn = mysql.connect()
-    cursor = conn.cursor()
-
-    null_query = "UPDATE ogrenci SET ogrenci_veli_id = NULL WHERE ogrenci_veli_id = %s"
-    cursor.execute(null_query, (veli_id,))
-
-    delete_query = "DELETE FROM veli WHERE veli_id = %s"
-    cursor.execute(delete_query, (veli_id,))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify(success=True, message="Veli başarıyla silindi.")
 
 def get_custodians():
     conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
@@ -388,7 +334,6 @@ def get_ogretmenler():
             "workStatus": ogretmen["calisma_durumu"],
             "salary": ogretmen["maas"],
             "workPosition": ogretmen["is_pozisyonu"],
-            "proffesion": ""
         }
         teacher_list.append(teacher_data)
 
@@ -441,35 +386,28 @@ def get_temizlik_gorevlileri():
     JOIN temizlik_gorevlisi tg ON c.calisan_id = tg.temizlik_gorevlisi_id
     """
     cursor.execute(query)
-    temizlik_gorevlileri = cursor.fetchall()
+    raw_temizlik_gorevlileri = cursor.fetchall()
+
+    temizlik_gorevlileri_list = []
+    for temizlikci in raw_temizlik_gorevlileri:
+        temizlikci_data = {
+            "id": temizlikci["calisan_id"],
+            "name": temizlikci["calisan_ad"],
+            "surname": temizlikci["calisan_soyad"],
+            "email": temizlikci["calisan_email"],
+            "phoneNumber": temizlikci["calisan_telefon_no"],
+            "birthDate": temizlikci["dogum_tarihi"].strftime('%Y-%m-%d'),
+            "workStatus": temizlikci["calisma_durumu"],
+            "salary": temizlikci["maas"],
+            "workPosition": temizlikci["is_pozisyonu"]
+        }
+        temizlik_gorevlileri_list.append(temizlikci_data)
 
     cursor.close()
     conn.close()
 
-    return jsonify(temizlik_gorevlileri)
+    return jsonify(temizlik_gorevlileri_list)
 
-@app.route('/ekle_pozisyon_idari_personel', methods=['POST'])
-def add_update_pozisyon_idari_personel():
-    data = request.json
-    idari_personel_id = data['id']
-    yeni_pozisyon = data['administrativePosition']
-
-    conn = mysql.connector.connect(user='your_username', password='your_password', host='127.0.0.1', database='your_database')
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT pozisyon FROM idari_personel WHERE idari_personel_id = %s", (idari_personel_id,))
-    mevcut_pozisyon = cursor.fetchone()
-
-    if mevcut_pozisyon:
-        cursor.execute("UPDATE idari_personel SET pozisyon = %s WHERE idari_personel_id = %s", (yeni_pozisyon, idari_personel_id))
-    else:
-        cursor.execute("INSERT INTO idari_personel (idari_personel_id, pozisyon) VALUES (%s, %s)", (idari_personel_id, yeni_pozisyon))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify(success=True, message="İdari personel pozisyonu başarıyla eklendi veya güncellendi.")
 
 @app.route('/add_ders', methods=['POST'])
 def add_ders():
@@ -641,35 +579,7 @@ def delete_ogrenci_musaitlik(ogrenci_id):
 
     return jsonify(success=True, message="Öğrenci müsaitlik bilgisi başarıyla silindi.")
 
-@app.route('/get_musaitlik_zamani', methods=['GET'])
-def get_musaitlik_zamani():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
 
-    # Öğrenci müsaitlik zamanları
-    query_ogrenci = """
-    SELECT omz.*, o.ogrenci_ad, o.ogrenci_soyadi
-    FROM ogrenci_musaitlik_zamani omz
-    JOIN ogrenci o ON omz.ogrenci_id = o.ogrenci_id
-    """
-    cursor.execute(query_ogrenci)
-    ogrenci_musaitlik = cursor.fetchall()
-
-    # Öğretmen müsaitlik zamanları
-    query_ogretmen = """
-    SELECT omz.*, c.calisan_ad, c.calisan_soyad
-    FROM ogretmen_musaitlik_zamani omz
-    JOIN ogretmen o ON omz.ogretmen_id = o.ogretmen_id
-    JOIN calisan c ON o.ogretmen_id = c.calisan_id
-    """
-    cursor.execute(query_ogretmen)
-    ogretmen_musaitlik = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    # Sonuçları JSON formatına dönüştürün
-    return jsonify({'ogrenci_musaitlik': ogrenci_musaitlik, 'ogretmen_musaitlik': ogretmen_musaitlik})
 
 @app.route('/add_malzeme', methods=['POST'])
 def add_malzeme():
@@ -757,17 +667,28 @@ def delete_malzeme(malzeme_id):
 
 @app.route('/get_malzeme', methods=['GET'])
 def get_malzeme():
-    cursor = mysql.cursor(dictionary=True)
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
 
     query = "SELECT * FROM malzeme"
     cursor.execute(query)
+    raw_malzemeler = cursor.fetchall()
 
-    malzemeler = cursor.fetchall()
+    malzeme_list = []
+    for malzeme in raw_malzemeler:
+        malzeme_data = {
+            "id": malzeme["malzeme_id"],
+            "name": malzeme["malzeme_adi"],
+            "quantity": malzeme["miktar"],
+            "minimumQuantity": malzeme["minumum_stok_miktari"],
+            "cost": malzeme["fiyat"]
+        }
+        malzeme_list.append(malzeme_data)
 
     cursor.close()
+    conn.close()
 
-    # Sonucu JSON formatında döndür
-    return jsonify(malzemeler)
+    return jsonify(malzeme_list)
 
 
 
