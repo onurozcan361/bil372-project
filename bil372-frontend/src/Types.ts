@@ -64,3 +64,19 @@ export interface Stock {
   minimumQuantity: number;
   cost: number;
 }
+
+export interface StudentAvaliableTime {
+  id: number;
+  day: string;
+  startTime: string;
+  endTime: string;
+  studentId: string;
+}
+
+export interface TeacherAvaliableTime {
+  id: number;
+  day: string;
+  startTime: string;
+  endTime: string;
+  teacherId: string;
+}

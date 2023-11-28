@@ -64,31 +64,45 @@ def add_student():
 @app.route('/update_student', methods=['POST'])
 def update_student():
     data = request.json
-    ogrenci_id = data['id']
-    ogrenci_adi = data['name']
-    ogrenci_soyadi = data['surname']
-    ogrenci_email = data['email']
-    ogrenci_telefon_no = data['phoneNumber']
-    ogrenci_dogum_tarihi = data['birthDate']
-    ogrenci_adres = data['address']
-    ogrenci_kayit_tarihi = data['registrationDate']
-    ogrenci_aktif_mi = data['isActive']
-    ogrenci_veli_id = data.get('custodianId')
+    student_data = data['student']
+    custodian_data = data['custodian']
+    ogrenci_id = student_data['id']
+    ogrenci_adi = student_data['name']
+    ogrenci_soyadi = student_data['surname']
+    ogrenci_email = student_data['email']
+    ogrenci_telefon_no = student_data['phoneNumber']
+    ogrenci_dogum_tarihi = student_data['birthDate']
+    ogrenci_adres = student_data['address']
+    ogrenci_kayit_tarihi = student_data['registrationDate']
+    ogrenci_aktif_mi = student_data['isActive']
+    ogrenci_veli_id = student_data.get('custodianId')
+
+    veli_id = custodian_data['id']
+    veli_adi = custodian_data['name']
+    veli_soyadi = custodian_data['surname']
+    veli_email = custodian_data['email']
+    veli_telefon_no = custodian_data['phoneNumber']
 
     conn = mysql.connect()
     cursor = conn.cursor()
 
-    query = """
+    query_student  = """
     UPDATE ogrenci SET ogrenci_adi=%s, ogrenci_soyadi=%s, ogrenci_email=%s, 
     ogrenci_telefon_no=%s, ogrenci_dogum_tarihi=%s, ogrenci_adres=%s, 
     ogrenci_kayit_tarihi=%s, ogrenci_aktif_mi=%s, ogrenci_veli_id=%s 
     WHERE ogrenci_id=%s
     """
 
-    cursor.execute(query, (ogrenci_adi, ogrenci_soyadi, ogrenci_email,
+    cursor.execute(query_student, (ogrenci_adi, ogrenci_soyadi, ogrenci_email,
                            ogrenci_telefon_no, ogrenci_dogum_tarihi, ogrenci_adres,
                            ogrenci_kayit_tarihi, ogrenci_aktif_mi, ogrenci_veli_id,
                            ogrenci_id))
+
+    query_custodian  = """
+       UPDATE veli SET veli_adi=%s, veli_soyadi=%s, veli_email=%s, veli_telefon_no=%s
+       WHERE veli_id=%s
+       """
+    cursor.execute(query_custodian , (veli_adi, veli_soyadi, veli_email, veli_telefon_no, veli_id))
 
     conn.commit()
     cursor.close()
@@ -324,6 +338,28 @@ def delete_calisan():
 
     return jsonify(success=True, message="Çalışan ve ilgili veriler başarıyla silindi.")
 
+def get_calisan():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+    SELECT c.*, o.verdigi_ders, t.pozisyon, NULL AS temizlik_gorevlisi_id
+    FROM calisan c
+    LEFT JOIN ogretmen o ON c.calisan_id = o.ogretmen_id
+    LEFT JOIN idari_personel t ON c.calisan_id = t.idari_personel_id
+    UNION
+    SELECT c.*, NULL AS verdigi_ders, NULL AS pozisyon, tg.temizlik_gorevlisi_id
+    FROM calisan c
+    LEFT JOIN temizlik_gorevlisi tg ON c.calisan_id = tg.temizlik_gorevlisi_id
+    """
+    cursor.execute(query)
+    calisanlar = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(calisanlar)
+
 @app.route('/ekle_pozisyon_idari_personel', methods=['POST'])
 def add_update_pozisyon_idari_personel():
     data = request.json
@@ -423,6 +459,26 @@ def delete_ders(ders_id):
 
     return jsonify(success=True, message="Ders başarıyla silindi.")
 
+@app.route('/get_ders', methods=['GET'])
+def get_ders():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Dersleri ve ilgili öğretmen bilgilerini al
+    query = """
+    SELECT d.*, c.calisan_ad, c.calisan_soyad
+    FROM ders d
+    LEFT JOIN ogretmen o ON d.ogretmen_id = o.ogretmen_id
+    LEFT JOIN calisan c ON o.ogretmen_id = c.calisan_id
+    """
+    cursor.execute(query)
+    dersler = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # Sonuçları JSON formatına dönüştürün
+    return jsonify(dersler)
 
 @app.route('/add_ogrenci_musaitlik', methods=['POST'])
 def add_ogrenci_musaitlik():
@@ -482,6 +538,35 @@ def delete_ogrenci_musaitlik(ogrenci_id):
 
     return jsonify(success=True, message="Öğrenci müsaitlik bilgisi başarıyla silindi.")
 
+@app.route('/get_musaitlik_zamani', methods=['GET'])
+def get_musaitlik_zamani():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Öğrenci müsaitlik zamanları
+    query_ogrenci = """
+    SELECT omz.*, o.ogrenci_ad, o.ogrenci_soyadi
+    FROM ogrenci_musaitlik_zamani omz
+    JOIN ogrenci o ON omz.ogrenci_id = o.ogrenci_id
+    """
+    cursor.execute(query_ogrenci)
+    ogrenci_musaitlik = cursor.fetchall()
+
+    # Öğretmen müsaitlik zamanları
+    query_ogretmen = """
+    SELECT omz.*, c.calisan_ad, c.calisan_soyad
+    FROM ogretmen_musaitlik_zamani omz
+    JOIN ogretmen o ON omz.ogretmen_id = o.ogretmen_id
+    JOIN calisan c ON o.ogretmen_id = c.calisan_id
+    """
+    cursor.execute(query_ogretmen)
+    ogretmen_musaitlik = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # Sonuçları JSON formatına dönüştürün
+    return jsonify({'ogrenci_musaitlik': ogrenci_musaitlik, 'ogretmen_musaitlik': ogretmen_musaitlik})
 
 @app.route('/add_malzeme', methods=['POST'])
 def add_malzeme():
@@ -563,6 +648,21 @@ def delete_malzeme(malzeme_id):
     conn.close()
 
     return jsonify(success=True, message="Malzeme başarıyla silindi.")
+
+@app.route('/get_malzeme', methods=['GET'])
+def get_malzeme():
+    cursor = mysql.cursor(dictionary=True)
+
+    query = "SELECT * FROM malzeme"
+    cursor.execute(query)
+
+    malzemeler = cursor.fetchall()
+
+    cursor.close()
+
+    # Sonucu JSON formatında döndür
+    return jsonify(malzemeler)
+
 
 
 if __name__ == "__main__":
