@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -6,11 +7,18 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import dummyDers from '../dummyDers.json';
-import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
-import { Course } from '../Types';
-import { useState } from 'react';
+import dummyOgretmen from '../dummyOgretmen.json';
 import ApiClient from '../ApiClient';
+
+interface Course {
+  id: string;
+  name: string;
+  weeklyHour: number;
+  demand: number;
+  teacherId: string;
+}
 
 const initCourse: Course = {
   id: '',
@@ -29,12 +37,18 @@ const fieldLabels: Record<keyof Course, string> = {
 };
 
 const CourseTab = () => {
-  const [selectedCourse, setSelectedCourse] = useState<Course>(initCourse);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [courses, setCourses] = useState<Course[]>(dummyDers);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
-
+  const [openTeacherDialog, setOpenTeacherDialog] = useState<boolean>(false);
+  const [teachers, setTeachers] = useState<any[]>(dummyOgretmen);
   const [newCourse, setNewCourse] = useState<Course>(initCourse);
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
+
+  const getTeacherName = (teacherId: string): string => {
+    const teacher = teachers.find((teacher) => teacher.id === teacherId);
+    return teacher ? `${teacher.name} ${teacher.surname}` : 'Öğretmen Bulunamadı';
+  };
 
   const handleUpdateClick = (course: Course) => {
     const updatedCourse: Course = courses.find((object) => object.id === course.id) as Course;
@@ -44,18 +58,25 @@ const CourseTab = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSelectedCourse({ ...selectedCourse, [name]: value });
+    // selectedCourse null kontrolü yapılıyor
+    if (selectedCourse) {
+      setSelectedCourse({ ...selectedCourse, [name]: value });
+    }
   };
 
   const handleSaveChanges = () => {
-    // Buradan backende kaydedicez yapılan değişiklikleri
-    console.log('Değişiklikler kaydedildi:', selectedCourse);
-    setCourses((prevCourses) =>
-      prevCourses.map((course) =>
-        course.id === selectedCourse.id ? { ...course, ...selectedCourse } : course
-      )
-    );
-    setOpenUpdateDialog(false);
+    if (selectedCourse) {
+      // selectedCourse null değilse, backende kaydedicez yapılan değişiklikleri
+      console.log('Değişiklikler kaydedildi:', selectedCourse);
+      setCourses((prevCourses) =>
+        prevCourses.map((course) =>
+          course.id === selectedCourse.id ? { ...course, ...selectedCourse } : course
+        )
+      );
+      setOpenUpdateDialog(false);
+    } else {
+      console.log('Hata: Seçili bir kurs yok.');
+    }
   };
 
   const handleCloseUpdateDialog = () => {
@@ -98,14 +119,15 @@ const CourseTab = () => {
     { field: 'weeklyHour', headerName: 'Haftalik Ders Saati', width: 200 },
     { field: 'demand', headerName: 'Ders Talebi', width: 200 },
     { field: 'teacherId', headerName: 'Ogretmen Id', width: 200 },
-
     {
       field: 'actions',
       headerName: '',
       width: 300,
       renderCell: (params) => {
-        const handleClick = () => {
-          handleUpdateClick(params.row);
+        const handleDetailsClick = () => {
+          const teacherName = getTeacherName(params.row.teacherId);
+          setSelectedCourse(params.row);
+          setOpenTeacherDialog(true);
         };
 
         const handleDeleteClick = () => {
@@ -116,11 +138,9 @@ const CourseTab = () => {
 
         return (
           <>
-            <Button onClick={handleClick}>Duzenle</Button>
-            <Button onClick={() => {}}>Detayli Bilgi</Button>
-            <Button onClick={handleDeleteClick} color="error">
-              Sil
-            </Button>
+            <Button onClick={() => handleUpdateClick(params.row)}>Duzenle</Button>
+            <Button onClick={handleDetailsClick}>Detayli Bilgi</Button>
+            <Button onClick={handleDeleteClick} color="error">Sil</Button>
           </>
         );
       },
@@ -130,6 +150,29 @@ const CourseTab = () => {
   return (
     <>
       <Button onClick={handleAddCourseClick}>Ekle</Button>
+      <DataGrid rows={courses} columns={columns}></DataGrid>
+
+      {/* Teacher Details Dialog */}
+      <Dialog open={openTeacherDialog} onClose={() => setOpenTeacherDialog(false)}>
+      <DialogTitle><strong>Ders ve Öğretmen Detayları</strong></DialogTitle>
+        <DialogContent>
+          {selectedCourse && (
+            <>
+              <p><strong>Ders Bilgileri:</strong></p>
+              <p>Ders Kodu: {selectedCourse.id}</p>
+              <p>Ders Adı: {selectedCourse.name}</p>
+              <p>Haftalık Ders Saati: {selectedCourse.weeklyHour}</p>
+              <p>Ders Talebi: {selectedCourse.demand}</p>
+              <p><strong>Öğretmen: </strong>{getTeacherName(selectedCourse.teacherId)}</p>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenTeacherDialog(false)}>Kapat</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Add Course Dialog */}
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
         <DialogTitle>Öğrenci Ekleme</DialogTitle>
         <DialogContent>
@@ -154,8 +197,8 @@ const CourseTab = () => {
           <Button onClick={handleAddCourseSave}>Kaydet</Button>
         </DialogActions>
       </Dialog>
-      <DataGrid rows={courses} columns={columns}></DataGrid>
 
+      {/* Update Course Dialog */}
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
         <DialogTitle>Ders Duzenleme</DialogTitle>
         <DialogContent>
@@ -172,7 +215,7 @@ const CourseTab = () => {
                     fullWidth
                     disabled={key === 'id' || key === 'demand'}
                     sx={{ marginTop: '16px' }}
-                  ></TextField>
+                  />
                 );
               })}
             </>

@@ -4,27 +4,27 @@
         "name": "Ingilizce - 1",
         "weeklyHour": 4,
         "demand": 20,
-        "teacherId": "123-45-6789"
+        "teacherId": "9876543210"
     },
     {
         "id" : "ALM001",
         "name": "Almanca - 1",
         "weeklyHour": 4,
         "demand": 10,
-        "teacherId": "321-45-6798"
+        "teacherId": "1234567890"
     },
     {
         "id" : "MAT001",
         "name": "Matematik - 1",
         "weeklyHour": 8,
         "demand": 20,
-        "teacherId": "123-45-9876"
+        "teacherId": "8754362190"
     },
     {
         "id" : "RBK001",
         "name": "Robotik Kodlama - 1",
         "weeklyHour": 6,
         "demand": 15,
-        "teacherId": "543-45-6789"
+        "teacherId": "5432167890"
     }
 ]
