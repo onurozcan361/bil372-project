@@ -11,6 +11,7 @@ import ApiClient from './ApiClient';
 import { AdministrativeStaff, Course, Custodian, Student, Teacher } from './Types';
 import StudentAvaliableTimesTab from './TabContexts/AvailableTabComponents/StudentAvaliableTimesTable';
 import StudentScheduleViewer from './TabContexts/AvailableTabComponents/StudentScheduleViewer';
+import ExpeditureTab from './TabContexts/ExpenditureTab';
 
 export const Page = () => {
   const [value, setValue] = useState('1');
@@ -115,7 +116,9 @@ export const Page = () => {
         <TabPanel value="6">
           <StockTab />
         </TabPanel>
-        <TabPanel value="7">Giderler</TabPanel>
+        <TabPanel value="7">
+          <ExpeditureTab />
+        </TabPanel>
         <TabPanel value="8">
           <StudentScheduleViewer />
         </TabPanel>
