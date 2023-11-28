@@ -8,24 +8,15 @@ import AdministrativeStaff from './TabContexts/AdministrativeStaffTab';
 import CleaningStaffTab from './TabContexts/CleaningStaffTab';
 import StockTab from './TabContexts/StockTab';
 import ApiClient from './ApiClient';
-import { Custodian, Student } from './Types';
+import { Course, Custodian, Student, Teacher } from './Types';
+import StudentAvaliableTimesTab from './TabContexts/StudentAvaliableTimesTab';
 
-const initStudent: Student = {
-  name: '',
-  surname: '',
-  id: '',
-  phoneNumber: '',
-  email: '',
-  address: '',
-  birthDate: '',
-  isActive: false,
-  registrationDate: '',
-  custodianId: '',
-};
 export const Page = () => {
   const [value, setValue] = useState('1');
   const [students, setStudents] = useState<Student[] | undefined>([]);
   const [custodians, setCustodians] = useState<Custodian[] | undefined>([]);
+  const [courses, setCourses] = useState<Course[] | undefined>([]);
+  const [teachers, setTeachers] = useState<Teacher[] | undefined>([]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -33,6 +24,7 @@ export const Page = () => {
       getStudents();
     } else if (newValue === '2') {
     } else if (newValue === '3') {
+      getCourses();
     } else if (newValue === '4') {
     } else if (newValue === '5') {
     } else if (newValue === '6') {
@@ -46,9 +38,27 @@ export const Page = () => {
       setStudents(response.data[0]);
       setCustodians(response.data[1]);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
+
+  const getCourses = async () => {
+    try {
+      const response = await ApiClient.get('/get_ders');
+      setCourses(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // const getTeachers = async () => {
+  //   try {
+  //     const response = await ApiClient.get('/get_students');
+  //     setTeachers(response.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <Box
@@ -68,6 +78,7 @@ export const Page = () => {
           <Tab label="Temizlik Gorevlileri" value="5" />
           <Tab label="Stok" value="6" />
           <Tab label="Gider" value="7" />
+          <Tab label="Ogrenci Musaitlik Zamanlari" value="8"></Tab>
         </Tabs>
         <TabPanel value="1">
           <StudentTab students={students as Student[]} custodians={custodians as Custodian[]} />
@@ -88,6 +99,9 @@ export const Page = () => {
           <StockTab />
         </TabPanel>
         <TabPanel value="7">Giderler</TabPanel>
+        <TabPanel value="8">
+          <StudentAvaliableTimesTab />
+        </TabPanel>
       </TabContext>
     </Box>
   );

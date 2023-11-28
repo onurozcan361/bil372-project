@@ -65,7 +65,7 @@ export interface Stock {
   cost: number;
 }
 
-export interface StudentAvaliableTime {
+export interface StudentAvailableTime {
   id: number;
   day: string;
   startTime: string;
@@ -73,7 +73,7 @@ export interface StudentAvaliableTime {
   studentId: string;
 }
 
-export interface TeacherAvaliableTime {
+export interface TeacherAvailiableTime {
   id: number;
   day: string;
   startTime: string;
