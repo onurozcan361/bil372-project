@@ -27,10 +27,13 @@ const fieldLabels: Record<keyof Stock, string> = {
   cost: 'Malzeme Ucreti',
 };
 
-const StockTab = () => {
+interface StockTab {
+  stocks: Stock[];
+}
+const StockTab = (props: StockTab) => {
   const [selectedStock, setSelectedStock] = useState<Stock>(initStock);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
-  const [stocks, setStocks] = useState<Stock[]>(dummyMalzeme as Stock[]);
+  const [stocks, setStocks] = useState<Stock[]>(props.stocks);
   const [error, setError] = useState<string>('');
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
@@ -76,7 +79,7 @@ const StockTab = () => {
   };
 
   const handleAddStockSave = () => {
-    const isIdExist = stocks.some(stock => stock.id === newStock.id);
+    const isIdExist = stocks.some((stock) => stock.id === newStock.id);
     if (isIdExist) {
       setError('Hata: Aynı ID Stok Öğesi zaten mevcut.');
     } else {
@@ -86,7 +89,6 @@ const StockTab = () => {
       setOpenAddDialog(false);
     }
   };
-  
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'Id', width: 200 },
@@ -122,7 +124,6 @@ const StockTab = () => {
   ];
   return (
     <>
-
       <Snackbar
         open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
         autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı

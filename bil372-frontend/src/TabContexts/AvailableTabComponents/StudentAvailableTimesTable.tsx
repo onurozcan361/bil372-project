@@ -18,7 +18,7 @@ const timeSlots = Array.from({ length: 11 }, (_, i) => `${i + 8}:00 - ${i + 9}:0
 interface StudentAvailableTimesProps {
   studentAvailableTimes: StudentAvailableTime[];
 }
-const StudentAvaliableTimesTabTable = (props: StudentAvailableTimesProps) => {
+const StudentAvailableTimesTabTable = (props: StudentAvailableTimesProps) => {
   const [schedule, setSchedule] = useState<JSX.Element[][]>(
     Array.from({ length: daysOfWeek.length }, () =>
       Array.from({ length: timeSlots.length }, () => <></>)
@@ -78,4 +78,4 @@ const StudentAvaliableTimesTabTable = (props: StudentAvailableTimesProps) => {
   );
 };
 
-export default StudentAvaliableTimesTabTable;
+export default StudentAvailableTimesTabTable;

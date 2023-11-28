@@ -11,6 +11,7 @@ import dummyData from '../dummyOgretmen.json';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Teacher } from '../Types';
 import { useState } from 'react';
+import ApiClient from '../ApiClient';
 
 const initTeacher: Teacher = {
   id: '',
@@ -36,13 +37,17 @@ const fieldLabels: Record<keyof Teacher, string> = {
   workPosition: 'Gorev',
 };
 
-const TeacherTab = () => {
+interface TeacherTabProps {
+  teachers: Teacher[];
+}
+const TeacherTab = (props: TeacherTabProps) => {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher>(initTeacher);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
-  const [teachers, setTeachers] = useState<Teacher[]>(dummyData as Teacher[]);
+  const [teachers, setTeachers] = useState<Teacher[]>(props.teachers);
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newTeacher, setNewTeacher] = useState<Teacher>(initTeacher);
+  const [openDetailedInfoDialog, setOpenDetailedInfoDialog] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
   const handleUpdateClick = (teacher: Teacher) => {
@@ -60,28 +65,19 @@ const TeacherTab = () => {
     setSelectedTeacher({ ...selectedTeacher, [name]: value });
   };
 
-  const handleAddTeacherSave = () => {
-    const isTeacherExist = teachers.some((teacher) => teacher.id === newTeacher.id);
-    const isEmailExist = teachers.some((teacher) => teacher.email === newTeacher.email);
-    const isPhoneExist = teachers.some((teacher) => teacher.phoneNumber === newTeacher.phoneNumber);
-    if (isTeacherExist || isEmailExist || isPhoneExist) {
-      setError('Hata: Aynı ID, telefon numarası veya e-posta ile öğretmen zaten mevcut.');
-    } else {
-      setTeachers((prevTeachers) => [...prevTeachers, newTeacher as Teacher]);
-      setNewTeacher(initTeacher);
-      setOpenAddDialog(false);
+  const handleSaveChanges = async () => {
+    try {
+      const response = await ApiClient.post('/update_calisan', selectedTeacher);
+      console.log('Değişiklikler kaydedildi:', selectedTeacher, response);
+      setTeachers((prevTeachers) =>
+        prevTeachers.map((teacher) =>
+          teacher.id === selectedTeacher.id ? { ...teacher, ...selectedTeacher } : teacher
+        )
+      );
+      setOpenUpdateDialog(false);
+    } catch (error) {
+      console.error(error);
     }
-  };
-
-  const handleSaveChanges = () => {
-    // Buradan backende kaydedicez yapılan değişiklikleri
-    console.log('Değişiklikler kaydedildi:', selectedTeacher);
-    setTeachers((prevTeachers) =>
-      prevTeachers.map((teacher) =>
-        teacher.id === selectedTeacher.id ? { ...teacher, ...selectedTeacher } : teacher
-      )
-    );
-    setOpenUpdateDialog(false);
   };
 
   const handleAddTeacherClick = () => {
@@ -95,6 +91,25 @@ const TeacherTab = () => {
   const handleAddTeacherInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewTeacher({ ...newTeacher, [name]: value });
+  };
+
+  const handleAddTeacherSave = async () => {
+    const isTeacherExist = teachers.some((teacher) => teacher.id === newTeacher.id);
+    const isEmailExist = teachers.some((teacher) => teacher.email === newTeacher.email);
+    const isPhoneExist = teachers.some((teacher) => teacher.phoneNumber === newTeacher.phoneNumber);
+    if (isTeacherExist || isEmailExist || isPhoneExist) {
+      setError('Hata: Aynı ID, telefon numarası veya e-posta ile öğretmen zaten mevcut.');
+    } else {
+      try {
+        const response = await ApiClient.post('add_calisan', newTeacher);
+        console.log(response);
+        setTeachers((prevTeachers) => [...prevTeachers, newTeacher as Teacher]);
+        setNewTeacher(initTeacher);
+        setOpenAddDialog(false);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   };
 
   const columns: GridColDef[] = [
@@ -112,16 +127,26 @@ const TeacherTab = () => {
           handleUpdateClick(params.row);
         };
 
-        const handleDeleteClick = () => {
-          //backend e delete requesti atilacak
-          const updatedTeachers = teachers.filter((teacher) => teacher.id !== params.row.id);
-          setTeachers(updatedTeachers);
+        const handleDetailsClick = () => {
+          setSelectedTeacher(params.row);
+          setOpenDetailedInfoDialog(true);
+        };
+
+        const handleDeleteClick = async () => {
+          try {
+            const response = await ApiClient.delete(`/delete_calisan/${params.row.id}`);
+            console.log(response);
+            const updatedTeachers = teachers.filter((teacher) => teacher.id !== params.row.id);
+            setTeachers(updatedTeachers);
+          } catch (error) {
+            console.error(error);
+          }
         };
 
         return (
           <>
             <Button onClick={handleEditClick}>Düzenle</Button>
-            <Button onClick={() => {}}>Detayli Bilgi</Button>
+            <Button onClick={handleDetailsClick}>Detayli Bilgi</Button>
             <Button onClick={handleDeleteClick} color="error">
               Sil
             </Button>
@@ -130,6 +155,7 @@ const TeacherTab = () => {
       },
     },
   ];
+
   return (
     <>
       {/* Snackbar ile hata mesajını gösterme */}
@@ -192,6 +218,34 @@ const TeacherTab = () => {
         <DialogActions>
           <Button onClick={handleCloseUpdateDialog}>İptal</Button>
           <Button onClick={handleSaveChanges}>Kaydet</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openDetailedInfoDialog} onClose={() => setOpenDetailedInfoDialog(false)}>
+        <DialogTitle>
+          <strong>Idari Personel Detaylari</strong>
+        </DialogTitle>
+        <DialogContent>
+          {selectedTeacher && (
+            <>
+              {Object.keys(selectedTeacher).map((key: string) => {
+                return (
+                  <TextField
+                    key={key}
+                    label={fieldLabels[key as keyof Teacher]}
+                    name={key}
+                    value={selectedTeacher[key as keyof Teacher]}
+                    onChange={handleInputChange}
+                    disabled
+                    fullWidth
+                    sx={{ marginTop: '16px' }}
+                  ></TextField>
+                );
+              })}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDetailedInfoDialog(false)}>Kapat</Button>
         </DialogActions>
       </Dialog>
     </>
