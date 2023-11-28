@@ -11,3 +11,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.row-style {
+  background-color: rgb(238, 193, 193) !important; /* Arka plan rengini kırmızı olarak belirliyoruz */
+}

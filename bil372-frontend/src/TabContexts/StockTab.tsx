@@ -52,6 +52,11 @@ const StockTab = () => {
   };
 
   const handleSaveChanges = () => {
+
+    if (selectedStock.quantity < selectedStock.minimumQuantity) {
+      setError('Miktar, minimum miktarın altında olamaz!');
+      return;
+    }
     // Buradan backende kaydedicez yapılan değişiklikleri
     console.log('Değişiklikler kaydedildi:', selectedStock);
     setStocks((prevStocks) =>
@@ -75,7 +80,20 @@ const StockTab = () => {
     setNewStock({ ...newStock, [name]: value });
   };
 
+  const getRowStyle = (params :any) => {
+    return {
+      ...(params.row.quantity < params.row.minimumQuantity && {
+        backgroundColor: 'rgba(255, 0, 0, 0.3)', // Kırmızı tonunda bir arka plan rengi
+        fontWeight: 'bold', // Kalın yazı tipi
+      }),
+    };
+  };
+
   const handleAddStockSave = () => {
+    if (newStock.quantity < newStock.minimumQuantity) {
+      setError('Hata: Miktar, minimum miktarın altında!');
+      return;
+    }
     const isIdExist = stocks.some(stock => stock.id === newStock.id);
     if (isIdExist) {
       setError('Hata: Aynı ID Stok Öğesi zaten mevcut.');
@@ -156,7 +174,9 @@ const StockTab = () => {
           <Button onClick={handleAddStockSave}>Kaydet</Button>
         </DialogActions>
       </Dialog>
-      <DataGrid columns={columns} rows={stocks}></DataGrid>
+      <DataGrid columns={columns} rows={stocks} getRowClassName={(params) =>
+      params.row.quantity < params.row.minimumQuantity ? 'row-style' : ''
+      }></DataGrid>
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
         <DialogTitle>Stok Duzenle</DialogTitle>
         <DialogContent>
