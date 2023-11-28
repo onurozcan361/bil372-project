@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   TextField,
 } from '@mui/material';
@@ -44,12 +45,13 @@ const CourseTab = () => {
   const [teachers, setTeachers] = useState<any[]>(dummyOgretmen);
   const [newCourse, setNewCourse] = useState<Course>(initCourse);
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
+  const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
 
   const getTeacherName = (teacherId: string): string => {
     const teacher = teachers.find((teacher) => teacher.id === teacherId);
     return teacher ? `${teacher.name} ${teacher.surname}` : 'Öğretmen Bulunamadı';
   };
-
+  
   const handleUpdateClick = (course: Course) => {
     const updatedCourse: Course = courses.find((object) => object.id === course.id) as Course;
     setSelectedCourse(updatedCourse);
@@ -97,11 +99,16 @@ const CourseTab = () => {
   };
 
   const handleAddCourseSave = () => {
-    //backend e request atilicak
-    addCourseRequest(newCourse);
-    setCourses((prevCourses) => [...prevCourses, newCourse as Course]);
-    setNewCourse(initCourse);
-    setOpenAddDialog(false);
+    const isCourseExist = courses.some(course => course.id === newCourse.id);
+  
+    if (isCourseExist) {
+      setErrorDialogOpen(true);
+    } else {
+      addCourseRequest(newCourse);
+      setCourses(prevCourses => [...prevCourses, newCourse as Course]);
+      setNewCourse(initCourse);
+      setOpenAddDialog(false);
+    }
   };
 
   const addCourseRequest = async (course: Course) => {
@@ -152,6 +159,17 @@ const CourseTab = () => {
       <Button onClick={handleAddCourseClick}>Ekle</Button>
       <DataGrid rows={courses} columns={columns}></DataGrid>
 
+      {/* Error Dialog */}
+      <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
+        <DialogTitle><strong>HATA</strong></DialogTitle>
+        <DialogContent>
+          <DialogContentText>Aynı ID ile kurs zaten mevcut.</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setErrorDialogOpen(false)}>OK</Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Teacher Details Dialog */}
       <Dialog open={openTeacherDialog} onClose={() => setOpenTeacherDialog(false)}>
       <DialogTitle><strong>Ders ve Öğretmen Detayları</strong></DialogTitle>
@@ -174,7 +192,7 @@ const CourseTab = () => {
 
       {/* Add Course Dialog */}
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
-        <DialogTitle>Öğrenci Ekleme</DialogTitle>
+        <DialogTitle>Ders Ekleme</DialogTitle>
         <DialogContent>
           <>
             {Object.keys(newCourse).map((key: string) => {
@@ -200,7 +218,7 @@ const CourseTab = () => {
 
       {/* Update Course Dialog */}
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Ders Duzenleme</DialogTitle>
+        <DialogTitle>Ders Düzenleme</DialogTitle>
         <DialogContent>
           {selectedCourse && (
             <>
@@ -231,3 +249,7 @@ const CourseTab = () => {
 };
 
 export default CourseTab;
+function setError(arg0: string) {
+  throw new Error('Function not implemented.');
+}
+

@@ -8,6 +8,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Snackbar,
   TextField,
 } from '@mui/material';
 const initCleaningStaff: CleaningStaff = {
@@ -39,6 +40,7 @@ const CleaningStaffTab = () => {
   const [selectedCleaningStaff, setSelectedCleaningStaff] =
     useState<CleaningStaff>(initCleaningStaff);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const [cleaningStaffs, setCleaningStaffs] = useState<CleaningStaff[]>(
     dummyTemizlik as CleaningStaff[]
   );
@@ -90,14 +92,23 @@ const CleaningStaffTab = () => {
   };
 
   const handleAddCleaningStaffSave = () => {
-    //backend e request atilicak
-    setCleaningStaffs((prevCleaningStaffs) => [
-      ...prevCleaningStaffs,
-      newCleaningStaff as CleaningStaff,
-    ]);
-    setNewCleaningStaff(initCleaningStaff);
-    setOpenAddDialog(false);
+    const isIdExist = cleaningStaffs.some(staff => staff.id === newCleaningStaff.id);
+    const isEmailExist = cleaningStaffs.some(staff => staff.email === newCleaningStaff.email);
+    const isPhoneExist = cleaningStaffs.some(staff => staff.phoneNumber === newCleaningStaff.phoneNumber);
+  
+    if (isIdExist || isEmailExist || isPhoneExist) {
+      setError('Hata: Aynı ID veya e-posta ile Temizlik Personeli zaten mevcut.');
+    } else {
+      // Backend'e request atılacak
+      setCleaningStaffs((prevCleaningStaffs) => [
+        ...prevCleaningStaffs,
+        newCleaningStaff as CleaningStaff,
+      ]);
+      setNewCleaningStaff(initCleaningStaff);
+      setOpenAddDialog(false);
+    }
   };
+  
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'Id', width: 200 },
@@ -137,9 +148,18 @@ const CleaningStaffTab = () => {
 
   return (
     <>
+
+      <Snackbar
+        open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
+        autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
+        onClose={() => setError('')} // Snackbar kapatıldığında state'i temizle
+        message={error} // Snackbar içeriği
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Yerleştirme ayarı
+      />
+      
       <Button onClick={handleAddCleaningStaffClick}>Ekle</Button>
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
-        <DialogTitle>Ogretmen Ekle</DialogTitle>
+        <DialogTitle>Temizlik Görevlisi Ekle</DialogTitle>
         <DialogContent>
           <>
             {Object.keys(newCleaningStaff).map((key: string) => {
@@ -164,7 +184,7 @@ const CleaningStaffTab = () => {
       </Dialog>
       <DataGrid rows={cleaningStaffs} columns={columns}></DataGrid>
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Idari Personel Duzenle</DialogTitle>
+        <DialogTitle>Temizlik Görevlisi Duzenle</DialogTitle>
         <DialogContent>
           {selectedCleaningStaff && (
             <>

@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Snackbar,
   TextField,
 } from '@mui/material';
 import dummyData from '../dummyOgretmen.json';
@@ -46,6 +47,7 @@ const TeacherTab = () => {
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newTeacher, setNewTeacher] = useState<Teacher>(initTeacher);
+  const [error, setError] = useState<string>('');
 
   const handleUpdateClick = (teacher: Teacher) => {
     const updatedTeacher: Teacher = teachers.find((object) => object.id === teacher.id) as Teacher;
@@ -60,6 +62,19 @@ const TeacherTab = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSelectedTeacher({ ...selectedTeacher, [name]: value });
+  };
+
+  const handleAddTeacherSave = () => {
+    const isTeacherExist = teachers.some(teacher => teacher.id === newTeacher.id);
+    const isEmailExist = teachers.some(teacher => teacher.email === newTeacher.email);
+    const isPhoneExist = teachers.some(teacher => teacher.phoneNumber === newTeacher.phoneNumber);
+    if (isTeacherExist || isEmailExist || isPhoneExist) {
+      setError('Hata: Aynı ID, telefon numarası veya e-posta ile öğretmen zaten mevcut.'); 
+    } else {
+      setTeachers((prevTeachers) => [...prevTeachers, newTeacher as Teacher]);
+      setNewTeacher(initTeacher);
+      setOpenAddDialog(false);
+    }
   };
 
   const handleSaveChanges = () => {
@@ -84,13 +99,6 @@ const TeacherTab = () => {
   const handleAddTeacherInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewTeacher({ ...newTeacher, [name]: value });
-  };
-
-  const handleAddTeacherSave = () => {
-    //backend e request atilicak
-    setTeachers((prevTeachers) => [...prevTeachers, newTeacher as Teacher]);
-    setNewTeacher(initTeacher);
-    setOpenAddDialog(false);
   };
 
   const columns: GridColDef[] = [
@@ -128,9 +136,19 @@ const TeacherTab = () => {
   ];
   return (
     <>
+
+    {/* Snackbar ile hata mesajını gösterme */}
+    <Snackbar
+        open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
+        autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
+        onClose={() => setError('')} // Snackbar kapatıldığında state'i temizle
+        message={error} // Snackbar içeriği
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Yerleştirme ayarı
+      />
+
       <Button onClick={handleAddTeacherClick}>Ekle</Button>
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
-        <DialogTitle>Ogretmen Ekle</DialogTitle>
+        <DialogTitle>Öğretmen Ekle</DialogTitle>
         <DialogContent>
           <>
             {Object.keys(newTeacher).map((key: string) => {
@@ -155,7 +173,7 @@ const TeacherTab = () => {
       </Dialog>
       <DataGrid columns={columns} rows={teachers}></DataGrid>
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Ogretmen Duzenle</DialogTitle>
+        <DialogTitle>Ögretmen Düzenle</DialogTitle>
         <DialogContent>
           {selectedTeacher && (
             <>
