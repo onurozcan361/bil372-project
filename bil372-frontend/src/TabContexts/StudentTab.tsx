@@ -10,7 +10,7 @@ import { useState } from 'react';
 import dummyData from '../dummy.json';
 import dummyVeli from '../dummyVeli.json';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Student } from '../Types';
+import { Custodian, Student } from '../Types';
 
 const fieldLabels: Record<keyof Student, string> = {
   id: 'ID',
@@ -38,19 +38,24 @@ const initStudent: Student = {
   custodianId: '',
 };
 
-const StudentTab = () => {
+interface StudentProps {
+  students: Student[];
+  custodians: Custodian[];
+}
+const StudentTab = (props: StudentProps) => {
   const [selectedStudent, setSelectedStudent] = useState<Student>(initStudent);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
-  const [students, setStudents] = useState<Student[]>(dummyData as Student[]);
-  const [veliInfo, setVeliInfo] = useState<any>(null); 
+  const [students, setStudents] = useState<Student[]>(props.students);
+  const [custodians, setCustodians] = useState<Custodian[]>(props.custodians);
+  const [veliInfo, setVeliInfo] = useState<any>(null);
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newStudent, setNewStudent] = useState<Student>(initStudent);
   const getStudentAndCustodianInfo = (studentId: string) => {
     const selectedStudent = students.find((student) => student.id === studentId);
-  
+
     if (selectedStudent) {
       const custodianId = selectedStudent.custodianId;
-      const custodianInfo = dummyVeli.find((veli) => veli.id === custodianId);
+      const custodianInfo = custodians.find((veli) => veli.id === custodianId);
 
       return { selectedStudent, custodianInfo };
     }
@@ -182,7 +187,12 @@ const StudentTab = () => {
         </DialogActions>
       </Dialog>
 
-      <DataGrid rows={students} columns={columns} />
+      <DataGrid
+        rows={students}
+        columns={columns}
+        initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}
+        pageSizeOptions={[25, 50, 100]}
+      />
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
         <DialogTitle>Öğrenci Düzenleme</DialogTitle>
         <DialogContent>
@@ -210,7 +220,6 @@ const StudentTab = () => {
           <Button onClick={handleSaveChanges}>Kaydet</Button>
         </DialogActions>
       </Dialog>
-      <DataGrid rows={students} columns={columns} />
 
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
         <DialogTitle>Öğrenci ve Veli Detayları</DialogTitle>
@@ -233,10 +242,34 @@ const StudentTab = () => {
               <h3>Veli Bilgileri</h3>
               {veliInfo && (
                 <div>
-                  <TextField label="Veli Adı" value={veliInfo.name} disabled fullWidth margin="normal" />
-                  <TextField label="Veli Soyadı" value={veliInfo.surname} disabled fullWidth margin="normal" />
-                  <TextField label="Veli Telefon Numarası" value={veliInfo.phoneNumber} disabled fullWidth margin="normal" />
-                  <TextField label="Veli Email" value={veliInfo.email} disabled fullWidth margin="normal" />
+                  <TextField
+                    label="Veli Adı"
+                    value={veliInfo.name}
+                    disabled
+                    fullWidth
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Veli Soyadı"
+                    value={veliInfo.surname}
+                    disabled
+                    fullWidth
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Veli Telefon Numarası"
+                    value={veliInfo.phoneNumber}
+                    disabled
+                    fullWidth
+                    margin="normal"
+                  />
+                  <TextField
+                    label="Veli Email"
+                    value={veliInfo.email}
+                    disabled
+                    fullWidth
+                    margin="normal"
+                  />
                   {/* İhtiyaca göre diğer veli bilgilerini de gösterebilirsiniz */}
                 </div>
               )}
@@ -248,7 +281,6 @@ const StudentTab = () => {
         </DialogActions>
       </Dialog>
     </>
-      
   );
 };
 
