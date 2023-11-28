@@ -8,6 +8,7 @@ import {
   DialogContent,
   TextField,
   DialogActions,
+  Snackbar,
 } from '@mui/material';
 import { GridColDef, DataGrid } from '@mui/x-data-grid';
 const initStock: Stock = {
@@ -30,6 +31,7 @@ const StockTab = () => {
   const [selectedStock, setSelectedStock] = useState<Stock>(initStock);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [stocks, setStocks] = useState<Stock[]>(dummyMalzeme as Stock[]);
+  const [error, setError] = useState<string>('');
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newStock, setNewStock] = useState<Stock>(initStock);
@@ -74,11 +76,17 @@ const StockTab = () => {
   };
 
   const handleAddStockSave = () => {
-    //backend e request atilicak
-    setStocks((prevStocks) => [...prevStocks, newStock as Stock]);
-    setNewStock(initStock);
-    setOpenAddDialog(false);
+    const isIdExist = stocks.some(stock => stock.id === newStock.id);
+    if (isIdExist) {
+      setError('Hata: Aynı ID Stok Öğesi zaten mevcut.');
+    } else {
+      // Backend'e request atılacak
+      setStocks((prevStocks) => [...prevStocks, newStock as Stock]);
+      setNewStock(initStock);
+      setOpenAddDialog(false);
+    }
   };
+  
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'Id', width: 200 },
@@ -114,9 +122,18 @@ const StockTab = () => {
   ];
   return (
     <>
+
+      <Snackbar
+        open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
+        autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
+        onClose={() => setError('')} // Snackbar kapatıldığında state'i temizle
+        message={error} // Snackbar içeriği
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Yerleştirme ayarı
+      />
+
       <Button onClick={handleAddStockClick}>Ekle</Button>
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
-        <DialogTitle>Ogretmen Ekle</DialogTitle>
+        <DialogTitle>Stok Ekle</DialogTitle>
         <DialogContent>
           <>
             {Object.keys(newStock).map((key: string) => {
@@ -141,7 +158,7 @@ const StockTab = () => {
       </Dialog>
       <DataGrid columns={columns} rows={stocks}></DataGrid>
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Ogretmen Duzenle</DialogTitle>
+        <DialogTitle>Stok Duzenle</DialogTitle>
         <DialogContent>
           {selectedStock && (
             <>

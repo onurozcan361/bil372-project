@@ -8,6 +8,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Snackbar,
   TextField,
 } from '@mui/material';
 const initAdministrativeStaff: AdministrativeStaff = {
@@ -47,6 +48,7 @@ const AdministrativeStaffTab = () => {
   );
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const [newAdministrativeStaff, setNewAdministrativeStaff] =
     useState<AdministrativeStaff>(initAdministrativeStaff);
 
@@ -94,13 +96,21 @@ const AdministrativeStaffTab = () => {
   };
 
   const handleAddAdministrativeStaffSave = () => {
-    //backend e request atilicak
-    setAdministrativeStaffs((prevAdministrativeStaffs) => [
-      ...prevAdministrativeStaffs,
-      newAdministrativeStaff as AdministrativeStaff,
-    ]);
-    setNewAdministrativeStaff(initAdministrativeStaff);
-    setOpenAddDialog(false);
+    const isIdExist = administrativeStaffs.some(staff => staff.id === newAdministrativeStaff.id);
+    const isEmailExist = administrativeStaffs.some(staff => staff.email === newAdministrativeStaff.email);
+    const isPhoneExist = administrativeStaffs.some(staff => staff.phoneNumber === newAdministrativeStaff.phoneNumber);
+  
+    if (isIdExist || isEmailExist || isPhoneExist) {
+      setError('Hata: Aynı ID, telefon veya e-posta ile İdari Personel zaten mevcut.');
+    } else {
+      // Backend'e request atılacak
+      setAdministrativeStaffs((prevAdministrativeStaffs) => [
+        ...prevAdministrativeStaffs,
+        newAdministrativeStaff as AdministrativeStaff,
+      ]);
+      setNewAdministrativeStaff(initAdministrativeStaff);
+      setOpenAddDialog(false);
+    }
   };
 
   const columns: GridColDef[] = [
@@ -141,9 +151,18 @@ const AdministrativeStaffTab = () => {
 
   return (
     <>
+
+      <Snackbar
+        open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
+        autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
+        onClose={() => setError('')} // Snackbar kapatıldığında state'i temizle
+        message={error} // Snackbar içeriği
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Yerleştirme ayarı
+      />
+
       <Button onClick={handleAddAdministrativeStaffClick}>Ekle</Button>
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
-        <DialogTitle>Ogretmen Ekle</DialogTitle>
+        <DialogTitle>İdari Personel Ekle</DialogTitle>
         <DialogContent>
           <>
             {Object.keys(newAdministrativeStaff).map((key: string) => {
@@ -168,7 +187,7 @@ const AdministrativeStaffTab = () => {
       </Dialog>
       <DataGrid rows={administrativeStaffs} columns={columns}></DataGrid>
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Idari Personel Duzenle</DialogTitle>
+        <DialogTitle>İdari Personel Düzenle</DialogTitle>
         <DialogContent>
           {selectedAdministrativeStaff && (
             <>
