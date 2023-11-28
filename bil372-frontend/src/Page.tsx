@@ -4,12 +4,13 @@ import { useState } from 'react';
 import StudentTab from './TabContexts/StudentTab';
 import TeacherTab from './TabContexts/TeacherTab';
 import CourseTab from './TabContexts/CourseTab';
-import AdministrativeStaff from './TabContexts/AdministrativeStaffTab';
+import AdministrativeStaffTab from './TabContexts/AdministrativeStaffTab';
 import CleaningStaffTab from './TabContexts/CleaningStaffTab';
 import StockTab from './TabContexts/StockTab';
 import ApiClient from './ApiClient';
-import { Course, Custodian, Student, Teacher } from './Types';
-import StudentAvaliableTimesTab from './TabContexts/StudentAvaliableTimesTab';
+import { AdministrativeStaff, Course, Custodian, Student, Teacher } from './Types';
+import StudentAvaliableTimesTab from './TabContexts/AvailableTabComponents/StudentAvaliableTimesTable';
+import StudentScheduleViewer from './TabContexts/AvailableTabComponents/StudentScheduleViewer';
 
 export const Page = () => {
   const [value, setValue] = useState('1');
@@ -17,15 +18,20 @@ export const Page = () => {
   const [custodians, setCustodians] = useState<Custodian[] | undefined>([]);
   const [courses, setCourses] = useState<Course[] | undefined>([]);
   const [teachers, setTeachers] = useState<Teacher[] | undefined>([]);
+  const [administrativeStaffs, setAdministrativeStaffs] = useState<
+    AdministrativeStaff[] | undefined
+  >([]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     if (newValue === '1') {
       getStudents();
     } else if (newValue === '2') {
+      getTeachers();
     } else if (newValue === '3') {
       getCourses();
     } else if (newValue === '4') {
+      getAdministrativeStaff();
     } else if (newValue === '5') {
     } else if (newValue === '6') {
     } else if (newValue === '7') {
@@ -51,14 +57,23 @@ export const Page = () => {
     }
   };
 
-  // const getTeachers = async () => {
-  //   try {
-  //     const response = await ApiClient.get('/get_students');
-  //     setTeachers(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const getTeachers = async () => {
+    try {
+      const response = await ApiClient.get('/get_ogretmenler');
+      setTeachers(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAdministrativeStaff = async () => {
+    try {
+      const response = await ApiClient.get('/get_idari_personel');
+      setAdministrativeStaffs(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Box
@@ -87,10 +102,12 @@ export const Page = () => {
           <TeacherTab />
         </TabPanel>
         <TabPanel value="3">
-          <CourseTab />
+          <CourseTab courses={courses as Course[]} />
         </TabPanel>
         <TabPanel value="4">
-          <AdministrativeStaff />
+          <AdministrativeStaffTab
+            administrativeStaffs={administrativeStaffs as AdministrativeStaff[]}
+          />
         </TabPanel>
         <TabPanel value="5">
           <CleaningStaffTab />
@@ -100,7 +117,7 @@ export const Page = () => {
         </TabPanel>
         <TabPanel value="7">Giderler</TabPanel>
         <TabPanel value="8">
-          <StudentAvaliableTimesTab />
+          <StudentScheduleViewer />
         </TabPanel>
       </TabContext>
     </Box>

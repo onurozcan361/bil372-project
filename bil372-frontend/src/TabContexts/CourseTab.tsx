@@ -9,17 +9,8 @@ import {
   TextField,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import dummyDers from '../dummyDers.json';
-import dummyOgretmen from '../dummyOgretmen.json';
 import ApiClient from '../ApiClient';
-
-interface Course {
-  id: string;
-  name: string;
-  weeklyHour: number;
-  demand: number;
-  teacherId: string;
-}
+import { Course } from '../Types';
 
 const initCourse: Course = {
   id: '',
@@ -27,6 +18,8 @@ const initCourse: Course = {
   weeklyHour: 0,
   demand: 0,
   teacherId: '',
+  teacherName: '',
+  teacherSurname: '',
 };
 
 const fieldLabels: Record<keyof Course, string> = {
@@ -35,23 +28,22 @@ const fieldLabels: Record<keyof Course, string> = {
   weeklyHour: 'Haftalik Ders Saati',
   demand: 'Talep',
   teacherId: 'Ogretmen Id',
+  teacherName: 'Ogretmen Adi',
+  teacherSurname: 'Ogretmen Soyadi',
 };
 
-const CourseTab = () => {
+interface CourseTabProps {
+  courses: Course[];
+}
+const CourseTab = (props: CourseTabProps) => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [courses, setCourses] = useState<Course[]>(dummyDers);
+  const [courses, setCourses] = useState<Course[]>(props.courses);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [openTeacherDialog, setOpenTeacherDialog] = useState<boolean>(false);
-  const [teachers, setTeachers] = useState<any[]>(dummyOgretmen);
   const [newCourse, setNewCourse] = useState<Course>(initCourse);
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
 
-  const getTeacherName = (teacherId: string): string => {
-    const teacher = teachers.find((teacher) => teacher.id === teacherId);
-    return teacher ? `${teacher.name} ${teacher.surname}` : 'Öğretmen Bulunamadı';
-  };
-  
   const handleUpdateClick = (course: Course) => {
     const updatedCourse: Course = courses.find((object) => object.id === course.id) as Course;
     setSelectedCourse(updatedCourse);
@@ -66,16 +58,21 @@ const CourseTab = () => {
     }
   };
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     if (selectedCourse) {
-      // selectedCourse null değilse, backende kaydedicez yapılan değişiklikleri
-      console.log('Değişiklikler kaydedildi:', selectedCourse);
-      setCourses((prevCourses) =>
-        prevCourses.map((course) =>
-          course.id === selectedCourse.id ? { ...course, ...selectedCourse } : course
-        )
-      );
-      setOpenUpdateDialog(false);
+      console.log(selectedCourse);
+      try {
+        const response = await ApiClient.post('/update_ders', selectedCourse);
+        console.log('Değişiklikler kaydedildi:', selectedCourse, response.data);
+        setCourses((prevCourses) =>
+          prevCourses.map((course) =>
+            course.id === selectedCourse.id ? { ...course, ...selectedCourse } : course
+          )
+        );
+        setOpenUpdateDialog(false);
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       console.log('Hata: Seçili bir kurs yok.');
     }
@@ -99,13 +96,13 @@ const CourseTab = () => {
   };
 
   const handleAddCourseSave = () => {
-    const isCourseExist = courses.some(course => course.id === newCourse.id);
-  
+    const isCourseExist = courses.some((course) => course.id === newCourse.id);
+
     if (isCourseExist) {
       setErrorDialogOpen(true);
     } else {
       addCourseRequest(newCourse);
-      setCourses(prevCourses => [...prevCourses, newCourse as Course]);
+      setCourses((prevCourses) => [...prevCourses, newCourse as Course]);
       setNewCourse(initCourse);
       setOpenAddDialog(false);
     }
@@ -132,22 +129,28 @@ const CourseTab = () => {
       width: 300,
       renderCell: (params) => {
         const handleDetailsClick = () => {
-          const teacherName = getTeacherName(params.row.teacherId);
           setSelectedCourse(params.row);
           setOpenTeacherDialog(true);
         };
 
-        const handleDeleteClick = () => {
-          //backend e delete requesti atilacak
-          const updatedCourses = courses.filter((course) => course.id !== params.row.id);
-          setCourses(updatedCourses);
+        const handleDeleteClick = async () => {
+          try {
+            const response = await ApiClient.delete(`/delete_ders/${params.row.id}`);
+            console.log(response);
+            const updatedCourses = courses.filter((course) => course.id !== params.row.id);
+            setCourses(updatedCourses);
+          } catch (error) {
+            console.error(error);
+          }
         };
 
         return (
           <>
             <Button onClick={() => handleUpdateClick(params.row)}>Duzenle</Button>
             <Button onClick={handleDetailsClick}>Detayli Bilgi</Button>
-            <Button onClick={handleDeleteClick} color="error">Sil</Button>
+            <Button onClick={handleDeleteClick} color="error">
+              Sil
+            </Button>
           </>
         );
       },
@@ -161,7 +164,9 @@ const CourseTab = () => {
 
       {/* Error Dialog */}
       <Dialog open={errorDialogOpen} onClose={() => setErrorDialogOpen(false)}>
-        <DialogTitle><strong>HATA</strong></DialogTitle>
+        <DialogTitle>
+          <strong>HATA</strong>
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>Aynı ID ile kurs zaten mevcut.</DialogContentText>
         </DialogContent>
@@ -172,16 +177,23 @@ const CourseTab = () => {
 
       {/* Teacher Details Dialog */}
       <Dialog open={openTeacherDialog} onClose={() => setOpenTeacherDialog(false)}>
-      <DialogTitle><strong>Ders ve Öğretmen Detayları</strong></DialogTitle>
+        <DialogTitle>
+          <strong>Ders ve Öğretmen Detayları</strong>
+        </DialogTitle>
         <DialogContent>
           {selectedCourse && (
             <>
-              <p><strong>Ders Bilgileri:</strong></p>
+              <p>
+                <strong>Ders Bilgileri:</strong>
+              </p>
               <p>Ders Kodu: {selectedCourse.id}</p>
               <p>Ders Adı: {selectedCourse.name}</p>
               <p>Haftalık Ders Saati: {selectedCourse.weeklyHour}</p>
               <p>Ders Talebi: {selectedCourse.demand}</p>
-              <p><strong>Öğretmen: </strong>{getTeacherName(selectedCourse.teacherId)}</p>
+              <p>
+                <strong>Öğretmen: </strong>
+                {selectedCourse.teacherName} {selectedCourse.teacherSurname}
+              </p>
             </>
           )}
         </DialogContent>
@@ -195,19 +207,22 @@ const CourseTab = () => {
         <DialogTitle>Ders Ekleme</DialogTitle>
         <DialogContent>
           <>
-            {Object.keys(newCourse).map((key: string) => {
-              return (
-                <TextField
-                  key={key}
-                  label={fieldLabels[key as keyof Course]}
-                  name={key}
-                  value={newCourse[key as keyof Course]}
-                  onChange={handleAddCourseInputChange}
-                  fullWidth
-                  sx={{ marginTop: '16px' }}
-                />
-              );
-            })}
+            {Object.keys(newCourse)
+              .filter((key: string) => key !== 'teacherName')
+              .filter((key: string) => key !== 'teacherSurname')
+              .map((key: string) => {
+                return (
+                  <TextField
+                    key={key}
+                    label={fieldLabels[key as keyof Course]}
+                    name={key}
+                    value={newCourse[key as keyof Course]}
+                    onChange={handleAddCourseInputChange}
+                    fullWidth
+                    sx={{ marginTop: '16px' }}
+                  />
+                );
+              })}
           </>
         </DialogContent>
         <DialogActions>
@@ -222,20 +237,23 @@ const CourseTab = () => {
         <DialogContent>
           {selectedCourse && (
             <>
-              {Object.keys(selectedCourse).map((key: string) => {
-                return (
-                  <TextField
-                    key={key}
-                    label={fieldLabels[key as keyof Course]}
-                    name={key}
-                    value={selectedCourse[key as keyof Course]}
-                    onChange={handleInputChange}
-                    fullWidth
-                    disabled={key === 'id' || key === 'demand'}
-                    sx={{ marginTop: '16px' }}
-                  />
-                );
-              })}
+              {Object.keys(selectedCourse)
+                .filter((key: string) => key !== 'teacherName')
+                .filter((key: string) => key !== 'teacherSurname')
+                .map((key: string) => {
+                  return (
+                    <TextField
+                      key={key}
+                      label={fieldLabels[key as keyof Course]}
+                      name={key}
+                      value={selectedCourse[key as keyof Course]}
+                      onChange={handleInputChange}
+                      fullWidth
+                      disabled={key === 'id' || key === 'demand'}
+                      sx={{ marginTop: '16px' }}
+                    />
+                  );
+                })}
             </>
           )}
         </DialogContent>
@@ -252,4 +270,3 @@ export default CourseTab;
 function setError(arg0: string) {
   throw new Error('Function not implemented.');
 }
-
