@@ -8,7 +8,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { GridColDef, DataGrid } from '@mui/x-data-grid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Expenditure } from '../Types';
 import dummyGider from '../dummyGider.json';
 
@@ -34,6 +34,51 @@ const ExpeditureTab = () => {
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newExpenditure, setNewExpenditure] = useState<Expenditure>(initExpenditure);
   const [error, setError] = useState<string>('');
+  const [selectedFilter, setSelectedFilter] = useState<string>(''); // State for selected filter
+  const [filteredExpenditures, setFilteredExpenditures] = useState<Expenditure[]>([]);
+  const [totalSpent, setTotalSpent] = useState<number>(0); // Toplam harcanan tutar
+
+  useEffect(() => {
+    // Haftalık filtreleme
+    const filterWeekly = () => {
+      const currentDate = new Date();
+      const weekAgoDate = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000); // 1 hafta önce
+
+      const filtered = expenditures.filter(
+        (expenditure) => new Date(expenditure.date) >= weekAgoDate && new Date(expenditure.date) <= currentDate
+      );
+
+      setFilteredExpenditures(filtered);
+      const total = filtered.reduce((acc, exp) => acc + exp.fee, 0);
+      setTotalSpent(total);
+    };
+
+    // Aylık filtreleme
+    const filterMonthly = () => {
+      const currentDate = new Date();
+      const monthAgoDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate()); // 1 ay önce
+
+      const filtered = expenditures.filter(
+        (expenditure) =>
+          new Date(expenditure.date) >= monthAgoDate && new Date(expenditure.date) <= currentDate
+      );
+
+      setFilteredExpenditures(filtered);
+      const total = filtered.reduce((acc, exp) => acc + exp.fee, 0);
+      setTotalSpent(total);
+    };
+
+    // Haftalık veya aylık filtreleme durumuna göre işlem yap
+    if (selectedFilter === 'weekly') {
+      filterWeekly();
+    } else if (selectedFilter === 'monthly') {
+      filterMonthly();
+    } else {
+      setFilteredExpenditures(expenditures);
+      const total = expenditures.reduce((acc, exp) => acc + exp.fee, 0);
+      setTotalSpent(total);
+    }
+  }, [expenditures, selectedFilter]);
 
   const handleUpdateClick = (expenditure: Expenditure) => {
     const updatedExpenditure: Expenditure = expenditures.find(
@@ -136,9 +181,19 @@ const ExpeditureTab = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Yerleştirme ayarı
       />
 
+      <div>
+      <p><strong>TOPLAM HARCANAN TUTAR:</strong> {totalSpent + "₺"}</p>
+      </div>
+
+      <div>
+        {/* Buttons for Weekly and Monthly filtering */}
+        <Button onClick={() => setSelectedFilter('weekly')}>HAFTALIK</Button>
+        <Button onClick={() => setSelectedFilter('monthly')}>AYLIK</Button>
+      </div>
+
       <Button onClick={handleAddExpenditureClick}>Ekle</Button>
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
-        <DialogTitle>Öğretmen Ekle</DialogTitle>
+        <DialogTitle>Gider Ekle</DialogTitle>
         <DialogContent>
           <>
             {Object.keys(newExpenditure).map((key: string) => {
@@ -161,9 +216,9 @@ const ExpeditureTab = () => {
           <Button onClick={handleAddExpenditureSave}>Kaydet</Button>
         </DialogActions>
       </Dialog>
-      <DataGrid columns={columns} rows={expenditures}></DataGrid>
+      <DataGrid columns={columns} rows={filteredExpenditures}></DataGrid>
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Ögretmen Düzenle</DialogTitle>
+        <DialogTitle>Gider Düzenle</DialogTitle>
         <DialogContent>
           {selectedExpenditure && (
             <>
