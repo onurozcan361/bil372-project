@@ -18,12 +18,10 @@ const initTeacher: Teacher = {
   surname: '',
   phoneNumber: '',
   email: '',
-  address: '',
   birthDate: '',
   workStatus: '',
   salary: 0,
   workPosition: '',
-  profession: '',
 };
 
 const fieldLabels: Record<keyof Teacher, string> = {
@@ -32,12 +30,10 @@ const fieldLabels: Record<keyof Teacher, string> = {
   surname: 'Soyad',
   phoneNumber: 'Telefon Numarasi',
   email: 'Email',
-  address: 'Adres',
   birthDate: 'Dogum Tarihi',
   workStatus: 'Calisma Durumu',
   salary: 'Maaş',
   workPosition: 'Gorev',
-  profession: 'Alani',
 };
 
 const TeacherTab = () => {
@@ -65,11 +61,11 @@ const TeacherTab = () => {
   };
 
   const handleAddTeacherSave = () => {
-    const isTeacherExist = teachers.some(teacher => teacher.id === newTeacher.id);
-    const isEmailExist = teachers.some(teacher => teacher.email === newTeacher.email);
-    const isPhoneExist = teachers.some(teacher => teacher.phoneNumber === newTeacher.phoneNumber);
+    const isTeacherExist = teachers.some((teacher) => teacher.id === newTeacher.id);
+    const isEmailExist = teachers.some((teacher) => teacher.email === newTeacher.email);
+    const isPhoneExist = teachers.some((teacher) => teacher.phoneNumber === newTeacher.phoneNumber);
     if (isTeacherExist || isEmailExist || isPhoneExist) {
-      setError('Hata: Aynı ID, telefon numarası veya e-posta ile öğretmen zaten mevcut.'); 
+      setError('Hata: Aynı ID, telefon numarası veya e-posta ile öğretmen zaten mevcut.');
     } else {
       setTeachers((prevTeachers) => [...prevTeachers, newTeacher as Teacher]);
       setNewTeacher(initTeacher);
@@ -136,9 +132,8 @@ const TeacherTab = () => {
   ];
   return (
     <>
-
-    {/* Snackbar ile hata mesajını gösterme */}
-    <Snackbar
+      {/* Snackbar ile hata mesajını gösterme */}
+      <Snackbar
         open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
         autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
         onClose={() => setError('')} // Snackbar kapatıldığında state'i temizle

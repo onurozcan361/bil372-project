@@ -17,7 +17,6 @@ const initCleaningStaff: CleaningStaff = {
   surname: '',
   phoneNumber: '',
   email: '',
-  address: '',
   birthDate: '',
   workStatus: '',
   salary: 0,
@@ -30,7 +29,6 @@ const fieldLabels: Record<keyof CleaningStaff, string> = {
   surname: 'Soyad',
   phoneNumber: 'Telefon Numarasi',
   email: 'Email',
-  address: 'Adres',
   birthDate: 'Dogum Tarihi',
   workPosition: 'Gorev',
   workStatus: 'Calisma Durumu',
@@ -92,10 +90,12 @@ const CleaningStaffTab = () => {
   };
 
   const handleAddCleaningStaffSave = () => {
-    const isIdExist = cleaningStaffs.some(staff => staff.id === newCleaningStaff.id);
-    const isEmailExist = cleaningStaffs.some(staff => staff.email === newCleaningStaff.email);
-    const isPhoneExist = cleaningStaffs.some(staff => staff.phoneNumber === newCleaningStaff.phoneNumber);
-  
+    const isIdExist = cleaningStaffs.some((staff) => staff.id === newCleaningStaff.id);
+    const isEmailExist = cleaningStaffs.some((staff) => staff.email === newCleaningStaff.email);
+    const isPhoneExist = cleaningStaffs.some(
+      (staff) => staff.phoneNumber === newCleaningStaff.phoneNumber
+    );
+
     if (isIdExist || isEmailExist || isPhoneExist) {
       setError('Hata: Aynı ID veya e-posta ile Temizlik Personeli zaten mevcut.');
     } else {
@@ -108,7 +108,6 @@ const CleaningStaffTab = () => {
       setOpenAddDialog(false);
     }
   };
-  
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'Id', width: 200 },
@@ -148,7 +147,6 @@ const CleaningStaffTab = () => {
 
   return (
     <>
-
       <Snackbar
         open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
         autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
@@ -156,7 +154,7 @@ const CleaningStaffTab = () => {
         message={error} // Snackbar içeriği
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Yerleştirme ayarı
       />
-      
+
       <Button onClick={handleAddCleaningStaffClick}>Ekle</Button>
       <Dialog open={openAddDialog} onClose={handleCloseAddDialog}>
         <DialogTitle>Temizlik Görevlisi Ekle</DialogTitle>

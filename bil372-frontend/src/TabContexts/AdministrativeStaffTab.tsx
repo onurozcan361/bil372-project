@@ -1,6 +1,5 @@
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { AdministrativeStaff } from '../Types';
-import dummyIdare from '../dummyIdare.json';
 import { useState } from 'react';
 import {
   Button,
@@ -11,13 +10,13 @@ import {
   Snackbar,
   TextField,
 } from '@mui/material';
+import ApiClient from '../ApiClient';
 const initAdministrativeStaff: AdministrativeStaff = {
   id: '',
   name: '',
   surname: '',
   phoneNumber: '',
   email: '',
-  address: '',
   birthDate: '',
   workStatus: '',
   salary: 0,
@@ -31,7 +30,6 @@ const fieldLabels: Record<keyof AdministrativeStaff, string> = {
   surname: 'Soyad',
   phoneNumber: 'Telefon Numarasi',
   email: 'Email',
-  address: 'Adres',
   birthDate: 'Dogum Tarihi',
   workPosition: 'Gorev',
   workStatus: 'Calisma Durumu',
@@ -39,18 +37,23 @@ const fieldLabels: Record<keyof AdministrativeStaff, string> = {
   administrativePosition: 'Idari Pozisyon',
 };
 
-const AdministrativeStaffTab = () => {
+interface AdministrativeStaffTabProps {
+  administrativeStaffs: AdministrativeStaff[];
+}
+const AdministrativeStaffTab = (props: AdministrativeStaffTabProps) => {
   const [selectedAdministrativeStaff, setSelectedAdministrativeStaff] =
     useState<AdministrativeStaff>(initAdministrativeStaff);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [administrativeStaffs, setAdministrativeStaffs] = useState<AdministrativeStaff[]>(
-    dummyIdare as AdministrativeStaff[]
+    props.administrativeStaffs
   );
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [newAdministrativeStaff, setNewAdministrativeStaff] =
     useState<AdministrativeStaff>(initAdministrativeStaff);
+
+  const [openDetailedInfoDialog, setOpenDetailedInfoDialog] = useState<boolean>(false);
 
   const handleUpdateClick = (administrativeStaff: AdministrativeStaff) => {
     const updatedAdministrativeStaff: AdministrativeStaff = administrativeStaffs.find(
@@ -69,17 +72,21 @@ const AdministrativeStaffTab = () => {
     setSelectedAdministrativeStaff({ ...selectedAdministrativeStaff, [name]: value });
   };
 
-  const handleSaveChanges = () => {
-    // Buradan backende kaydedicez yapılan değişiklikleri
-    console.log('Değişiklikler kaydedildi:', selectedAdministrativeStaff);
-    setAdministrativeStaffs((prevAdministrativeStaffs) =>
-      prevAdministrativeStaffs.map((administrativeStaff) =>
-        administrativeStaff.id === selectedAdministrativeStaff.id
-          ? { ...administrativeStaff, ...selectedAdministrativeStaff }
-          : administrativeStaff
-      )
-    );
-    setOpenUpdateDialog(false);
+  const handleSaveChanges = async () => {
+    try {
+      const response = await ApiClient.post('/update_calisan', selectedAdministrativeStaff);
+      console.log('Değişiklikler kaydedildi:', selectedAdministrativeStaff, response);
+      setAdministrativeStaffs((prevAdministrativeStaffs) =>
+        prevAdministrativeStaffs.map((administrativeStaff) =>
+          administrativeStaff.id === selectedAdministrativeStaff.id
+            ? { ...administrativeStaff, ...selectedAdministrativeStaff }
+            : administrativeStaff
+        )
+      );
+      setOpenUpdateDialog(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleAddAdministrativeStaffClick = () => {
@@ -95,21 +102,29 @@ const AdministrativeStaffTab = () => {
     setNewAdministrativeStaff({ ...newAdministrativeStaff, [name]: value });
   };
 
-  const handleAddAdministrativeStaffSave = () => {
-    const isIdExist = administrativeStaffs.some(staff => staff.id === newAdministrativeStaff.id);
-    const isEmailExist = administrativeStaffs.some(staff => staff.email === newAdministrativeStaff.email);
-    const isPhoneExist = administrativeStaffs.some(staff => staff.phoneNumber === newAdministrativeStaff.phoneNumber);
-  
+  const handleAddAdministrativeStaffSave = async () => {
+    const isIdExist = administrativeStaffs.some((staff) => staff.id === newAdministrativeStaff.id);
+    const isEmailExist = administrativeStaffs.some(
+      (staff) => staff.email === newAdministrativeStaff.email
+    );
+    const isPhoneExist = administrativeStaffs.some(
+      (staff) => staff.phoneNumber === newAdministrativeStaff.phoneNumber
+    );
+
     if (isIdExist || isEmailExist || isPhoneExist) {
       setError('Hata: Aynı ID, telefon veya e-posta ile İdari Personel zaten mevcut.');
     } else {
-      // Backend'e request atılacak
-      setAdministrativeStaffs((prevAdministrativeStaffs) => [
-        ...prevAdministrativeStaffs,
-        newAdministrativeStaff as AdministrativeStaff,
-      ]);
-      setNewAdministrativeStaff(initAdministrativeStaff);
-      setOpenAddDialog(false);
+      try {
+        const response = await ApiClient.post('/add_calisan', newAdministrativeStaff);
+        setAdministrativeStaffs((prevAdministrativeStaffs) => [
+          ...prevAdministrativeStaffs,
+          newAdministrativeStaff as AdministrativeStaff,
+        ]);
+        setNewAdministrativeStaff(initAdministrativeStaff);
+        setOpenAddDialog(false);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -128,18 +143,28 @@ const AdministrativeStaffTab = () => {
           handleUpdateClick(params.row);
         };
 
-        const handleDeleteClick = () => {
-          //backend e delete requesti atilacak
-          const updatedAdministrativeStaffs = administrativeStaffs.filter(
-            (student) => student.id !== params.row.id
-          );
-          setAdministrativeStaffs(updatedAdministrativeStaffs);
+        const handleDetailsClick = () => {
+          setSelectedAdministrativeStaff(params.row);
+          setOpenDetailedInfoDialog(true);
+        };
+
+        const handleDeleteClick = async () => {
+          try {
+            const response = await ApiClient.delete(`/delete_calisan/${params.row.id}`);
+            console.log(response);
+            const updatedAdministrativeStaffs = administrativeStaffs.filter(
+              (student) => student.id !== params.row.id
+            );
+            setAdministrativeStaffs(updatedAdministrativeStaffs);
+          } catch (error) {
+            console.error(error);
+          }
         };
 
         return (
           <>
             <Button onClick={handleEditClick}>Düzenle</Button>
-            <Button onClick={() => {}}>Detayli Bilgi</Button>
+            <Button onClick={handleDetailsClick}>Detayli Bilgi</Button>
             <Button onClick={handleDeleteClick} color="error">
               Sil
             </Button>
@@ -151,7 +176,6 @@ const AdministrativeStaffTab = () => {
 
   return (
     <>
-
       <Snackbar
         open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
         autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
@@ -211,6 +235,34 @@ const AdministrativeStaffTab = () => {
         <DialogActions>
           <Button onClick={handleCloseUpdateDialog}>İptal</Button>
           <Button onClick={handleSaveChanges}>Kaydet</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openDetailedInfoDialog} onClose={() => setOpenDetailedInfoDialog(false)}>
+        <DialogTitle>
+          <strong>Idari Personel Detaylari</strong>
+        </DialogTitle>
+        <DialogContent>
+          {selectedAdministrativeStaff && (
+            <>
+              {Object.keys(selectedAdministrativeStaff).map((key: string) => {
+                return (
+                  <TextField
+                    key={key}
+                    label={fieldLabels[key as keyof AdministrativeStaff]}
+                    name={key}
+                    value={selectedAdministrativeStaff[key as keyof AdministrativeStaff]}
+                    onChange={handleInputChange}
+                    disabled
+                    fullWidth
+                    sx={{ marginTop: '16px' }}
+                  ></TextField>
+                );
+              })}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDetailedInfoDialog(false)}>Kapat</Button>
         </DialogActions>
       </Dialog>
     </>

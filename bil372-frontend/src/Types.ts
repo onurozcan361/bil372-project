@@ -18,15 +18,12 @@ export interface Employee {
   email: string;
   phoneNumber: string;
   birthDate: string;
-  address: string;
   workStatus: string;
   salary: number;
   workPosition: string;
 }
 
-export interface Teacher extends Employee {
-  profession: string;
-}
+export interface Teacher extends Employee {}
 
 export interface AdministrativeStaff extends Employee {
   administrativePosition: string;
@@ -40,6 +37,8 @@ export interface Course {
   weeklyHour: number;
   demand: number;
   teacherId: string;
+  teacherName: string;
+  teacherSurname: string;
 }
 
 export interface Custodian {
