@@ -11,6 +11,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { GridColDef, DataGrid } from '@mui/x-data-grid';
+import ApiClient from '../ApiClient';
 const initStock: Stock = {
   id: '',
   name: '',
@@ -54,15 +55,19 @@ const StockTab = (props: StockTab) => {
     setSelectedStock({ ...selectedStock, [name]: value });
   };
 
-  const handleSaveChanges = () => {
-    // Buradan backende kaydedicez yapılan değişiklikleri
-    console.log('Değişiklikler kaydedildi:', selectedStock);
-    setStocks((prevStocks) =>
-      prevStocks.map((stock) =>
-        stock.id === selectedStock.id ? { ...stock, ...selectedStock } : stock
-      )
-    );
-    setOpenUpdateDialog(false);
+  const handleSaveChanges = async () => {
+    try {
+      const response = await ApiClient.post('/update_malzeme', selectedStock);
+      console.log('Değişiklikler kaydedildi:', selectedStock, response);
+      setStocks((prevStocks) =>
+        prevStocks.map((stock) =>
+          stock.id === selectedStock.id ? { ...stock, ...selectedStock } : stock
+        )
+      );
+      setOpenUpdateDialog(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleAddStockClick = () => {
@@ -78,15 +83,20 @@ const StockTab = (props: StockTab) => {
     setNewStock({ ...newStock, [name]: value });
   };
 
-  const handleAddStockSave = () => {
+  const handleAddStockSave = async () => {
     const isIdExist = stocks.some((stock) => stock.id === newStock.id);
     if (isIdExist) {
       setError('Hata: Aynı ID Stok Öğesi zaten mevcut.');
     } else {
-      // Backend'e request atılacak
-      setStocks((prevStocks) => [...prevStocks, newStock as Stock]);
-      setNewStock(initStock);
-      setOpenAddDialog(false);
+      try {
+        const response = await ApiClient.post('/add_malzeme', newStock);
+        console.log(response);
+        setStocks((prevStocks) => [...prevStocks, newStock as Stock]);
+        setNewStock(initStock);
+        setOpenAddDialog(false);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -105,10 +115,15 @@ const StockTab = (props: StockTab) => {
           handleUpdateClick(params.row);
         };
 
-        const handleDeleteClick = () => {
-          //backend e delete requesti atilacak
-          const updatedStocks = stocks.filter((stock) => stock.id !== params.row.id);
-          setStocks(updatedStocks);
+        const handleDeleteClick = async () => {
+          try {
+            const response = await ApiClient.delete(`/delete_malzeme/${params.row.id}`);
+            console.log(response);
+            const updatedStocks = stocks.filter((stock) => stock.id !== params.row.id);
+            setStocks(updatedStocks);
+          } catch (error) {
+            console.error(error);
+          }
         };
 
         return (
