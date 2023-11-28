@@ -474,11 +474,25 @@ def get_ders():
     cursor.execute(query)
     dersler = cursor.fetchall()
 
+    ders_list = []
+    for ders in dersler: 
+        ders_data = {
+            "id": ders['ders_id'],
+            "name": ders['ders_adi'],
+            "weeklyHour": ders['ders_saati'],
+            "demand": ders['talep'],
+            "teacherId": ders['ogretmen_id'],
+            "teacherInfo": {
+                "name" : ders['calisan_ad'],
+                "surname" : ders['calisan_soyad']
+            }
+        }
+        ders_list.append(ders_data)
     cursor.close()
     conn.close()
 
     # Sonuçları JSON formatına dönüştürün
-    return jsonify(dersler)
+    return jsonify(ders_list)
 
 @app.route('/add_ogrenci_musaitlik', methods=['POST'])
 def add_ogrenci_musaitlik():
