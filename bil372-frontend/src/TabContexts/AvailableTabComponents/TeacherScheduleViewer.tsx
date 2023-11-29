@@ -23,10 +23,10 @@ const TeacherScheduleViewer: React.FC = () => {
   return (
     <div>
       <SearchBar placeholder="Bir şeyler arayın..." onSearch={handleSearch} />
-      {teacherAvailableTimes.length >= 0 ? (
+      {teacherAvailableTimes.length > 0 ? (
         <TeacherAvailableTimesTabTable teacherAvailableTimes={teacherAvailableTimes} />
       ) : (
-        <p>Öğrenci bulunamadı veya mevcut zaman bilgisi yok.</p>
+        <p>Ogretmen bulunamadı veya mevcut zaman bilgisi yok.</p>
       )}
     </div>
   );
