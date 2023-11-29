@@ -159,7 +159,7 @@ const StudentTab = (props: StudentProps) => {
     if (selectedStudent && custodianInfo) {
       setSelectedStudent(selectedStudent);
       setOpenDetailedDialog(true);
-      setVeliInfo(custodianInfo); // Veli bilgilerini state'e atama
+      setVeliInfo(custodianInfo);
     }
   };
 

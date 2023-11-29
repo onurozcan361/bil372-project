@@ -27,7 +27,7 @@ def connect_to_database():
 def create_veli():
     soyad = fake.last_name()
     veli_id = str(fake.unique.random_int(min=1000000000, max=9999999999))
-    veli_adi = fake.first_name()  # Bu satır düzeltildi
+    veli_adi = fake.first_name()  
     return {
         'veli_id': veli_id,
         'veli_adi': veli_adi,
@@ -225,7 +225,6 @@ def insert_gider(connection):
     except Error as e:
         print("Gider eklerken hata oluştu:", e)
 
-# Veritabanı bağlantısını aç
 connection = connect_to_database()
 
 def get_courses(connection):
@@ -323,17 +322,17 @@ if __name__ == '__main__':
 
             idari_pozisyonlar = ["Müdür", "Yardımcı", "Yardımcı", "Okul Aile Birliği", "Vakıf Başkanı"]
             for pozisyon in idari_pozisyonlar:
-                idari_personel = create_calisan('İdari Personel')  # İdari personel için genel pozisyon
+                idari_personel = create_calisan('İdari Personel')  
                 insert_query_calisan = "INSERT INTO calisan (calisan_id, calisan_ad, calisan_soyad, calisan_email, calisan_telefon_no, calisma_durumu, dogum_tarihi, maas, is_pozisyonu) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 insert_data(connection, insert_query_calisan, (
                     idari_personel['calisan_id'], idari_personel['calisan_ad'], idari_personel['calisan_soyad'],
                     idari_personel['calisan_email'],
                     idari_personel['calisan_telefon_no'], idari_personel['calisma_durumu'],
                     idari_personel['dogum_tarihi'], idari_personel['maas'],
-                    'İdari Personel'))  # Burada 'İdari Personel' olarak belirtin
+                    'İdari Personel'))  
                 insert_query_idari = "INSERT INTO idari_personel (idari_personel_id, pozisyon) VALUES (%s, %s)"
                 insert_data(connection, insert_query_idari,
-                            (idari_personel['calisan_id'], pozisyon))  # Burada özel pozisyonu belirtin
+                            (idari_personel['calisan_id'], pozisyon))  
 
             for ogrenci in ogrenciler:
                 if ogrenci['ogrenci_aktif_mi']:

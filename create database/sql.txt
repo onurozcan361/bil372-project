@@ -178,3 +178,62 @@ ALTER TABLE ogrenci_alir_ders
     FOREIGN KEY (ders_id)
     REFERENCES ders(ders_id)
     ON DELETE CASCADE;
+
+DELIMITER //
+
+CREATE TRIGGER after_material_insert
+AFTER INSERT ON malzeme
+FOR EACH ROW
+BEGIN
+    IF NEW.malzeme_id LIKE 'kir%' THEN
+        UPDATE gider
+        SET tutar = tutar + (NEW.miktar * NEW.fiyat)
+        WHERE gider_turu = 'kırtasiye gideri';
+    ELSEIF NEW.malzeme_id LIKE 'tem%' THEN
+        UPDATE gider
+        SET tutar = tutar + (NEW.miktar * NEW.fiyat)
+        WHERE gider_turu = 'temizlik gideri';
+    END IF;
+END;
+//
+
+DELIMITER //
+
+CREATE TRIGGER after_employee_insert
+AFTER INSERT ON calisan
+FOR EACH ROW
+BEGIN
+    UPDATE gider
+    SET tutar = tutar + NEW.maas
+    WHERE gider_turu = 'maaş';
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER after_employee_delete
+AFTER delete ON calisan
+FOR EACH ROW
+BEGIN
+    UPDATE gider
+    SET tutar = tutar - OLD.maas
+    WHERE gider_turu = 'maaş';
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER after_employee_update
+AFTER update ON calisan
+FOR EACH ROW
+BEGIN
+     IF OLD.maas <> NEW.maas THEN
+        UPDATE gider
+        SET tutar = tutar - OLD.maas + NEW.maas
+        WHERE gider_turu = 'maaş';
+	END IF;
+END;
+//
+DELIMITER ;

@@ -10,12 +10,12 @@ def get_db_connection():
     connection = mysql.connector.connect(
         host='localhost',
         user='root',
-        password='23644470022Onurozcan.',#bu sifrenin bulundugu her yerde kendi database sifrenizi yazmaniz gerekiyor
+        password='23644470022Onurozcan.',
         database='schooldb'
     )
     return connection
 
-# MySQL configuration
+
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_DB'] = 'schooldb'
 app.config['MYSQL_DATABASE_USER'] = 'root'
@@ -40,13 +40,13 @@ def add_student():
     ogrenci_adres = data['newStudent']['address']
     ogrenci_kayit_tarihi = data['newStudent']['registrationDate']
     ogrenci_aktif_mi = data['newStudent']['isActive']
-    veli_bilgileri = data.get('newCustodian', {})  # Veli bilgileri
+    veli_bilgileri = data.get('newCustodian', {})  
     veli_id = veli_bilgileri.get('id', None)
 
     conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
-    # Veli kontrolü ve ekleme
+    
     
     veli_adi = veli_bilgileri['name']
     veli_soyadi = veli_bilgileri['surname']
@@ -55,7 +55,7 @@ def add_student():
     cursor.execute("INSERT INTO veli (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no) VALUES (%s, %s, %s, %s, %s)", 
                            (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no))
 
-    # Öğrenci ekleme
+    
     cursor.execute("""
     INSERT INTO ogrenci (ogrenci_id, ogrenci_adi, ogrenci_soyadi, ogrenci_email, 
     ogrenci_telefon_no, ogrenci_dogum_tarihi, ogrenci_adres, ogrenci_kayit_tarihi, 
@@ -191,7 +191,7 @@ def get_custodians():
 
     conn.close()
 
-    # Veli verilerini istenen formata dönüştürün
+    
     custodian_list = []
     for custodian in custodians:
         custodian_data = {
@@ -275,7 +275,7 @@ def update_calisan():
         if yeni_pozisyon:
             cursor.execute("UPDATE idari_personel SET pozisyon=%s WHERE idari_personel_id=%s", (yeni_pozisyon, calisan_id))
 
-    # Diğer pozisyonlar için benzer işlemler
+    
 
     conn.commit()
     cursor.close()
@@ -487,7 +487,7 @@ def get_ders():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Dersleri ve ilgili öğretmen bilgilerini al
+    
     query = """
     SELECT d.*, c.calisan_ad, c.calisan_soyad
     FROM ders d
@@ -513,7 +513,7 @@ def get_ders():
     cursor.close()
     conn.close()
 
-    # Sonuçları JSON formatına dönüştürün
+    
     return jsonify(ders_list)
 
 
@@ -703,11 +703,11 @@ def get_teacher_musaitlik_zamani(teacher_id):
     musaitlik_list = []
     for item in raw_musaitlik:
         start_total_seconds = item["startTime"].total_seconds()
-        start_hours = int(start_total_seconds // 3600)  # Saat
-        start_minutes = int((start_total_seconds % 3600) // 60)  # Dakika
+        start_hours = int(start_total_seconds // 3600)  
+        start_minutes = int((start_total_seconds % 3600) // 60) 
         end_total_seconds = item["endTime"].total_seconds()
-        end_hours = int(end_total_seconds // 3600)  # Saat
-        end_minutes = int((end_total_seconds % 3600) // 60)  # Dakika
+        end_hours = int(end_total_seconds // 3600)  
+        end_minutes = int((end_total_seconds % 3600) // 60)  
         teacher_available_times = {
             "id": item["id"],
             "day": item["day"],
@@ -739,11 +739,11 @@ def get_student_musaitlik_zamani(student_id):
     musaitlik_list = []
     for item in raw_musaitlik:
         start_total_seconds = item["startTime"].total_seconds()
-        start_hours = int(start_total_seconds // 3600)  # Saat
-        start_minutes = int((start_total_seconds % 3600) // 60)  # Dakika
+        start_hours = int(start_total_seconds // 3600)  
+        start_minutes = int((start_total_seconds % 3600) // 60) 
         end_total_seconds = item["endTime"].total_seconds()
-        end_hours = int(end_total_seconds // 3600)  # Saat
-        end_minutes = int((end_total_seconds % 3600) // 60)  # Dakika
+        end_hours = int(end_total_seconds // 3600)  
+        end_minutes = int((end_total_seconds % 3600) // 60)  
         student_available_times = {
             "id": item["id"],
             "day": item["day"],

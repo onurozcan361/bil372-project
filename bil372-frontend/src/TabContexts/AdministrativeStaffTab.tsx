@@ -178,11 +178,11 @@ const AdministrativeStaffTab = (props: AdministrativeStaffTabProps) => {
   return (
     <>
       <Snackbar
-        open={Boolean(error)} // Hata mesajı varsa Snackbar'ı göster
-        autoHideDuration={2000} // Otomatik olarak gizleme süresi (ms cinsinden), isteğe bağlı
-        onClose={() => setError('')} // Snackbar kapatıldığında state'i temizle
-        message={error} // Snackbar içeriği
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} // Yerleştirme ayarı
+        open={Boolean(error)}
+        autoHideDuration={2000}
+        onClose={() => setError('')}
+        message={error}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       />
 
       <Button onClick={handleAddAdministrativeStaffClick}>Ekle</Button>

@@ -52,7 +52,6 @@ const CourseTab = (props: CourseTabProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    // selectedCourse null kontrolü yapılıyor
     if (selectedCourse) {
       setSelectedCourse({ ...selectedCourse, [name]: value });
     }
