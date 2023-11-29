@@ -30,16 +30,16 @@ def get_data():
 @app.route('/add_student', methods=['POST'])
 def add_student():
     data = request.json
-    ogrenci_id = data['id']
-    ogrenci_adi = data['name']
-    ogrenci_soyadi = data['surname']
-    ogrenci_email = data['email']
-    ogrenci_telefon_no = data['phoneNumber']
-    ogrenci_dogum_tarihi = data['birthDate']
-    ogrenci_adres = data['address']
-    ogrenci_kayit_tarihi = data['registrationDate']
-    ogrenci_aktif_mi = data['isActive']
-    veli_bilgileri = data.get('custodian', {})  # Veli bilgileri
+    ogrenci_id = data['newStudent']['id']
+    ogrenci_adi = data['newStudent']['name']
+    ogrenci_soyadi = data['newStudent']['surname']
+    ogrenci_email = data['newStudent']['email']
+    ogrenci_telefon_no = data['newStudent']['phoneNumber']
+    ogrenci_dogum_tarihi = data['newStudent']['birthDate']
+    ogrenci_adres = data['newStudent']['address']
+    ogrenci_kayit_tarihi = data['newStudent']['registrationDate']
+    ogrenci_aktif_mi = data['newStudent']['isActive']
+    veli_bilgileri = data.get('newCustodian', {})  # Veli bilgileri
     veli_id = veli_bilgileri.get('id', None)
 
     conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
@@ -75,8 +75,8 @@ def add_student():
 @app.route('/update_student', methods=['POST'])
 def update_student():
     data = request.json
-    student_data = data['student']
-    custodian_data = data['custodian']
+    student_data = data['selectedStudent']
+    custodian_data = data['selectedCustodian']
     ogrenci_id = student_data['id']
     ogrenci_adi = student_data['name']
     ogrenci_soyadi = student_data['surname']
@@ -137,13 +137,15 @@ def delete_student(ogrenci_id):
 
     cursor.execute("SELECT COUNT(*) FROM ogrenci WHERE ogrenci_veli_id=%s AND ogrenci_id != %s", (veli_id, ogrenci_id))
     veliye_ait_diger_ogrenci_sayisi = cursor.fetchone()[0]
-
+    
+    query_ogrenci = "DELETE FROM ogrenci WHERE ogrenci_id=%s"
+    cursor.execute(query_ogrenci, (ogrenci_id,))
+    
     if veliye_ait_diger_ogrenci_sayisi == 0:
         query_veli = "DELETE FROM veli WHERE veli_id=%s"
         cursor.execute(query_veli, (veli_id,))
 
-    query_ogrenci = "DELETE FROM ogrenci WHERE ogrenci_id=%s"
-    cursor.execute(query_ogrenci, (ogrenci_id,))
+    
 
     conn.commit()
     cursor.close()
@@ -614,7 +616,7 @@ def update_malzeme():
     yeni_minimum_stok_miktari = data.get('minimumQuantity')
     yeni_fiyat = data.get('cost')
 
-    conn = mysql.connector.connect(user='your_username', password='your_password', host='127.0.0.1', database='your_database')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
     cursor = conn.cursor()
 
     update_parts = []
@@ -629,7 +631,7 @@ def update_malzeme():
         params.append(yeni_malzeme_adi)
 
     if yeni_minimum_stok_miktari is not None:
-        update_parts.append("minimum_stok_miktari = %s")
+        update_parts.append("minumum_stok_miktari = %s")
         params.append(yeni_minimum_stok_miktari)
 
     if yeni_fiyat is not None:
