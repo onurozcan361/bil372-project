@@ -13,6 +13,7 @@ import {
   CleaningStaff,
   Course,
   Custodian,
+  Expenditure,
   Stock,
   Student,
   Teacher,
@@ -32,7 +33,7 @@ export const Page = () => {
   >([]);
   const [cleaningStaffs, setCleaningStaffs] = useState<CleaningStaff[] | undefined>([]);
   const [stocks, setStocks] = useState<Stock[] | undefined>([]);
-
+  const [expenditures, setExpenditures] = useState<Expenditure[] | undefined>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export const Page = () => {
     } else if (newValue === '6') {
       getStocks();
     } else if (newValue === '7') {
+      getExpenditure();
     }
   };
 
@@ -130,6 +132,18 @@ export const Page = () => {
     }
   };
 
+  const getExpenditure = async () => {
+    setLoading(true);
+    try {
+      const response = await ApiClient.get('/get_gider');
+      setExpenditures(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -180,7 +194,7 @@ export const Page = () => {
               <StockTab stocks={stocks as Stock[]} />
             </TabPanel>
             <TabPanel value="7">
-              <ExpeditureTab />
+              <ExpeditureTab expenditures={expenditures as Expenditure[]} />
             </TabPanel>
             <TabPanel value="8">
               <StudentScheduleViewer />

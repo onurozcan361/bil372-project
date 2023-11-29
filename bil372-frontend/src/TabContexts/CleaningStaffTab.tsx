@@ -1,7 +1,6 @@
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { CleaningStaff } from '../Types';
 import { useState } from 'react';
-import dummyTemizlik from '../dummyTemizlik.json';
 import {
   Button,
   Dialog,

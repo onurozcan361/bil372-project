@@ -10,7 +10,6 @@ import {
 import { GridColDef, DataGrid } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { Expenditure } from '../Types';
-import dummyGider from '../dummyGider.json';
 
 const initExpenditure = {
   id: '',
@@ -25,18 +24,20 @@ const fieldLabels: Record<keyof Expenditure, string> = {
   type: 'Gider Turu',
   date: 'Son Islem Tarihi',
 };
-
-const ExpeditureTab = () => {
+interface ExpenditureTabProps {
+  expenditures: Expenditure[];
+}
+const ExpeditureTab = (props: ExpenditureTabProps) => {
   const [selectedExpenditure, setSelectedExpenditure] = useState<Expenditure>(initExpenditure);
   const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
-  const [expenditures, setExpenditures] = useState<Expenditure[]>(dummyGider as Expenditure[]);
+  const [expenditures, setExpenditures] = useState<Expenditure[]>(props.expenditures);
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
   const [newExpenditure, setNewExpenditure] = useState<Expenditure>(initExpenditure);
   const [error, setError] = useState<string>('');
   const [selectedFilter, setSelectedFilter] = useState<string>(''); // State for selected filter
   const [filteredExpenditures, setFilteredExpenditures] = useState<Expenditure[]>([]);
-  const [totalSpent, setTotalSpent] = useState<number>(0); // Toplam harcanan tutar
+  const [totalSpent, setTotalSpent] = useState<number>(); // Toplam harcanan tutar
 
   useEffect(() => {
     // Haftalık filtreleme
@@ -45,18 +46,23 @@ const ExpeditureTab = () => {
       const weekAgoDate = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000); // 1 hafta önce
 
       const filtered = expenditures.filter(
-        (expenditure) => new Date(expenditure.date) >= weekAgoDate && new Date(expenditure.date) <= currentDate
+        (expenditure) =>
+          new Date(expenditure.date) >= weekAgoDate && new Date(expenditure.date) <= currentDate
       );
 
       setFilteredExpenditures(filtered);
-      const total = filtered.reduce((acc, exp) => acc + exp.fee, 0);
+      const total: number = filtered.reduce((acc, exp) => acc + exp.fee, 0);
       setTotalSpent(total);
     };
 
     // Aylık filtreleme
     const filterMonthly = () => {
       const currentDate = new Date();
-      const monthAgoDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate()); // 1 ay önce
+      const monthAgoDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - 1,
+        currentDate.getDate()
+      ); // 1 ay önce
 
       const filtered = expenditures.filter(
         (expenditure) =>
@@ -64,7 +70,7 @@ const ExpeditureTab = () => {
       );
 
       setFilteredExpenditures(filtered);
-      const total = filtered.reduce((acc, exp) => acc + exp.fee, 0);
+      const total: number = filtered.reduce((acc, exp) => acc + exp.fee, 0);
       setTotalSpent(total);
     };
 
@@ -144,14 +150,17 @@ const ExpeditureTab = () => {
     {
       field: 'actions',
       headerName: 'İşlemler',
-      width: 300,
+      width: 200,
       renderCell: (params) => {
         const handleEditClick = () => {
           handleUpdateClick(params.row);
         };
 
         const handleDeleteClick = () => {
-          //backend e delete requesti atilacak
+          try {
+          } catch (error) {
+            console.error(error);
+          }
           const updatedExpenditures = expenditures.filter(
             (expenditure) => expenditure.id !== params.row.id
           );
@@ -161,7 +170,6 @@ const ExpeditureTab = () => {
         return (
           <>
             <Button onClick={handleEditClick}>Düzenle</Button>
-            <Button onClick={() => {}}>Detayli Bilgi</Button>
             <Button onClick={handleDeleteClick} color="error">
               Sil
             </Button>
@@ -182,7 +190,9 @@ const ExpeditureTab = () => {
       />
 
       <div>
-      <p><strong>TOPLAM HARCANAN TUTAR:</strong> {totalSpent + "₺"}</p>
+        <p>
+          <strong>TOPLAM HARCANAN TUTAR:</strong> {totalSpent + '₺'}
+        </p>
       </div>
 
       <div>
