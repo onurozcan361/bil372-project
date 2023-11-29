@@ -40,8 +40,7 @@ CREATE TABLE calisan (
 );
 
 CREATE TABLE ogretmen (
-    ogretmen_id char(10) PRIMARY KEY, 
-    verdigi_ders char(30),
+    ogretmen_id char(10) PRIMARY KEY,
     FOREIGN KEY (ogretmen_id) REFERENCES calisan(calisan_id)
 );
 

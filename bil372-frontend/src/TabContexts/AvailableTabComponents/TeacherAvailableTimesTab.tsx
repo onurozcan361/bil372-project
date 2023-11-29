@@ -12,7 +12,7 @@ import { TeacherAvailableTime } from '../../Types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
-const daysOfWeek = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum'];
+const daysOfWeek = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
 const timeSlots = Array.from({ length: 11 }, (_, i) => `${i + 8}:00 - ${i + 9}:00`);
 
 interface TeacherAvailableTimesProps {

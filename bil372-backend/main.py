@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import mysql.connector
 from flask_cors import CORS
+import datetime
 
 
 app = Flask(__name__)
@@ -671,7 +672,7 @@ def delete_gider(gider_id):
 
 
 @app.route('/add_gider', methods=['POST'])
-def add_malzeme():
+def add_gider():
     data = request.json
     gider_id = data['id']
     tutar = data['fee']
@@ -707,18 +708,27 @@ def get_teacher_musaitlik_zamani(teacher_id):
     cursor.execute(query, (teacher_id,))
     raw_musaitlik = cursor.fetchall()
 
-    teacher_available_times = [{
-        "id": item["id"],
-        "day": item["day"],
-        "startTime": item["startTime"].strftime('%H:%M'),
-        "endTime": item["endTime"].strftime('%H:%M'),
-        "teacherId": item["teacherId"]
-    } for item in raw_musaitlik]
+    musaitlik_list = []
+    for item in raw_musaitlik:
+        start_total_seconds = item["startTime"].total_seconds()
+        start_hours = int(start_total_seconds // 3600)  # Saat
+        start_minutes = int((start_total_seconds % 3600) // 60)  # Dakika
+        end_total_seconds = item["endTime"].total_seconds()
+        end_hours = int(end_total_seconds // 3600)  # Saat
+        end_minutes = int((end_total_seconds % 3600) // 60)  # Dakika
+        teacher_available_times = {
+            "id": item["id"],
+            "day": item["day"],
+            "startTime": f'{start_hours:02d}:{start_minutes:02d}',
+            "endTime": f'{end_hours:02d}:{end_minutes:02d}',
+            "studentId": item["teacherId"]
+        } 
+        musaitlik_list.append(teacher_available_times)
 
     cursor.close()
     conn.close()
 
-    return jsonify(teacher_available_times)
+    return jsonify(musaitlik_list)
 
 @app.route('/get_student_musaitlik_zamani/<student_id>', methods=['GET'])
 def get_student_musaitlik_zamani(student_id):
@@ -734,18 +744,27 @@ def get_student_musaitlik_zamani(student_id):
     cursor.execute(query, (student_id,))
     raw_musaitlik = cursor.fetchall()
 
-    student_available_times = [{
-        "id": item["id"],
-        "day": item["day"],
-        "startTime": item["startTime"].strftime('%H:%M'),
-        "endTime": item["endTime"].strftime('%H:%M'),
-        "studentId": item["studentId"]
-    } for item in raw_musaitlik]
+    musaitlik_list = []
+    for item in raw_musaitlik:
+        start_total_seconds = item["startTime"].total_seconds()
+        start_hours = int(start_total_seconds // 3600)  # Saat
+        start_minutes = int((start_total_seconds % 3600) // 60)  # Dakika
+        end_total_seconds = item["endTime"].total_seconds()
+        end_hours = int(end_total_seconds // 3600)  # Saat
+        end_minutes = int((end_total_seconds % 3600) // 60)  # Dakika
+        student_available_times = {
+            "id": item["id"],
+            "day": item["day"],
+            "startTime": f'{start_hours:02d}:{start_minutes:02d}',
+            "endTime": f'{end_hours:02d}:{end_minutes:02d}',
+            "studentId": item["studentId"]
+        } 
+        musaitlik_list.append(student_available_times)
 
     cursor.close()
     conn.close()
 
-    return jsonify(student_available_times)
+    return jsonify(musaitlik_list)
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port=8080)
