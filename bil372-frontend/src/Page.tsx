@@ -1,6 +1,6 @@
 import { TabContext, TabPanel } from '@mui/lab';
-import { Box, Tab, Tabs } from '@mui/material';
-import { useState } from 'react';
+import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
+import { useEffect, useState } from 'react';
 import StudentTab from './TabContexts/StudentTab';
 import TeacherTab from './TabContexts/TeacherTab';
 import CourseTab from './TabContexts/CourseTab';
@@ -33,6 +33,12 @@ export const Page = () => {
   const [cleaningStaffs, setCleaningStaffs] = useState<CleaningStaff[] | undefined>([]);
   const [stocks, setStocks] = useState<Stock[] | undefined>([]);
 
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    getStudents();
+  }, []);
+
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
     if (newValue === '1') {
@@ -52,57 +58,75 @@ export const Page = () => {
   };
 
   const getStudents = async () => {
+    setLoading(true);
     try {
       const response = await ApiClient.get('/get_students');
       setStudents(response.data[0]);
       setCustodians(response.data[1]);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getCourses = async () => {
+    setLoading(true);
     try {
       const response = await ApiClient.get('/get_ders');
       setCourses(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getTeachers = async () => {
+    setLoading(true);
     try {
       const response = await ApiClient.get('/get_ogretmenler');
       setTeachers(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getAdministrativeStaff = async () => {
+    setLoading(true);
     try {
       const response = await ApiClient.get('/get_idari_personel');
       setAdministrativeStaffs(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getCleaningStaff = async () => {
+    setLoading(true);
     try {
       const response = await ApiClient.get('/get_temizlik_gorevlileri');
       setCleaningStaffs(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const getStocks = async () => {
+    setLoading(true);
     try {
       const response = await ApiClient.get('/get_malzeme');
       setStocks(response.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -127,35 +151,45 @@ export const Page = () => {
           <Tab label="Ogrenci Musaitlik Zamanlari" value="8"></Tab>
           <Tab label="Ogretmen Musaitlik Zamanlari" value="9"></Tab>
         </Tabs>
-        <TabPanel value="1">
-          <StudentTab students={students as Student[]} custodians={custodians as Custodian[]} />
-        </TabPanel>
-        <TabPanel value="2">
-          <TeacherTab teachers={teachers as Teacher[]} />
-        </TabPanel>
-        <TabPanel value="3">
-          <CourseTab courses={courses as Course[]} />
-        </TabPanel>
-        <TabPanel value="4">
-          <AdministrativeStaffTab
-            administrativeStaffs={administrativeStaffs as AdministrativeStaff[]}
-          />
-        </TabPanel>
-        <TabPanel value="5">
-          <CleaningStaffTab cleaningStaffs={cleaningStaffs as CleaningStaff[]} />
-        </TabPanel>
-        <TabPanel value="6">
-          <StockTab stocks={stocks as Stock[]} />
-        </TabPanel>
-        <TabPanel value="7">
-          <ExpeditureTab />
-        </TabPanel>
-        <TabPanel value="8">
-          <StudentScheduleViewer />
-        </TabPanel>
-        <TabPanel value="9">
-          <TeacherScheduleViewer />
-        </TabPanel>
+        {loading ? (
+          <Box
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
+          >
+            <CircularProgress /> {/* Yükleme göstergesi */}
+          </Box>
+        ) : (
+          <>
+            <TabPanel value="1">
+              <StudentTab students={students as Student[]} custodians={custodians as Custodian[]} />
+            </TabPanel>
+            <TabPanel value="2">
+              <TeacherTab teachers={teachers as Teacher[]} />
+            </TabPanel>
+            <TabPanel value="3">
+              <CourseTab courses={courses as Course[]} />
+            </TabPanel>
+            <TabPanel value="4">
+              <AdministrativeStaffTab
+                administrativeStaffs={administrativeStaffs as AdministrativeStaff[]}
+              />
+            </TabPanel>
+            <TabPanel value="5">
+              <CleaningStaffTab cleaningStaffs={cleaningStaffs as CleaningStaff[]} />
+            </TabPanel>
+            <TabPanel value="6">
+              <StockTab stocks={stocks as Stock[]} />
+            </TabPanel>
+            <TabPanel value="7">
+              <ExpeditureTab />
+            </TabPanel>
+            <TabPanel value="8">
+              <StudentScheduleViewer />
+            </TabPanel>
+            <TabPanel value="9">
+              <TeacherScheduleViewer />
+            </TabPanel>
+          </>
+        )}
       </TabContext>
     </Box>
   );

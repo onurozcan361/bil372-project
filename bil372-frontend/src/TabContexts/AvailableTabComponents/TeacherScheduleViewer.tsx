@@ -3,15 +3,23 @@ import { TeacherAvailableTime } from '../../Types';
 
 import SearchBar from './SearchBar';
 import TeacherAvailableTimesTabTable from './TeacherAvailableTimesTab';
+import ApiClient from '../../ApiClient';
 
 const TeacherScheduleViewer: React.FC = () => {
   const [teacherId, setTeacherId] = useState<string>(''); // Seçilen öğrenci ID'si
   const [teacherAvailableTimes, setTeacherAvailableTimes] = useState<TeacherAvailableTime[]>([]);
 
-  const handleSearch = (id: string) => {
+  const handleSearch = async (id: string) => {
     // Burada, öğrenci ID'sine göre verileri getirmek için gerekli API çağrıları veya işlemler yapılabilir.
     // Örneğin, öğrenci ID'sine göre sunucudan verileri getirirsiniz ve setTeacherAvailableTimes ile state'i güncellersiniz.
     // Örnek olarak, sabit bir veri kullanımı:
+
+    try {
+      const response = await ApiClient.get(`/get_teacher_musaitlik_zamani/${id}`);
+      setTeacherAvailableTimes(response.data);
+    } catch (error) {
+      console.error(error);
+    }
 
     const mockTeacherData = [
       {
