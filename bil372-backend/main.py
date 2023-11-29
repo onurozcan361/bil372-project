@@ -318,7 +318,7 @@ def get_ogretmenler():
     cursor = conn.cursor(dictionary=True)
 
     query = """
-    SELECT c.*, o.verdigi_ders
+    SELECT c.*
     FROM calisan c
     JOIN ogretmen o ON c.calisan_id = o.ogretmen_id
     """
