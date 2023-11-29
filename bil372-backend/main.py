@@ -11,13 +11,13 @@ def get_db_connection():
         host='localhost',
         user='root',
         password='23644470022Onurozcan.',#bu sifrenin bulundugu her yerde kendi database sifrenizi yazmaniz gerekiyor
-        database='okul'
+        database='schooldb'
     )
     return connection
 
 # MySQL configuration
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['MYSQL_DATABASE_DB'] = 'okul'
+app.config['MYSQL_DATABASE_DB'] = 'schooldb'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = '23644470022Onurozcan.'
 
@@ -43,18 +43,16 @@ def add_student():
     veli_bilgileri = data.get('newCustodian', {})  # Veli bilgileri
     veli_id = veli_bilgileri.get('id', None)
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     # Veli kontrolü ve ekleme
-    if veli_id:
-        cursor.execute("SELECT COUNT(*) FROM veli WHERE veli_id = %s", (veli_id,))
-        if cursor.fetchone()[0] == 0:  # Veli yoksa ekle
-            veli_adi = veli_bilgileri['name']
-            veli_soyadi = veli_bilgileri['surname']
-            veli_email = veli_bilgileri['email']
-            veli_telefon_no = veli_bilgileri['phoneNumber']
-            cursor.execute("INSERT INTO veli (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no) VALUES (%s, %s, %s, %s, %s)", 
+    
+    veli_adi = veli_bilgileri['name']
+    veli_soyadi = veli_bilgileri['surname']
+    veli_email = veli_bilgileri['email']
+    veli_telefon_no = veli_bilgileri['phoneNumber']
+    cursor.execute("INSERT INTO veli (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no) VALUES (%s, %s, %s, %s, %s)", 
                            (veli_id, veli_adi, veli_soyadi, veli_email, veli_telefon_no))
 
     # Öğrenci ekleme
@@ -95,7 +93,7 @@ def update_student():
     veli_email = custodian_data['email']
     veli_telefon_no = custodian_data['phoneNumber']
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     query_student  = """
@@ -124,7 +122,7 @@ def update_student():
 
 @app.route('/delete_student/<ogrenci_id>', methods=['DELETE'])
 def delete_student(ogrenci_id):
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     query_musaitlik = "DELETE FROM ogrenci_musaitlik_zamani WHERE ogrenci_id=%s"
@@ -155,7 +153,7 @@ def delete_student(ogrenci_id):
     return jsonify(success=True, message="Öğrenci ve ilgili veriler başarıyla silindi.")
 
 def get_students():
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor(dictionary=True)
 
     query = "SELECT * FROM ogrenci"
@@ -184,7 +182,7 @@ def get_students():
 
 
 def get_custodians():
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor(dictionary=True)
 
     query = "SELECT * FROM veli"
@@ -220,7 +218,7 @@ def add_calisan():
     maas = data['salary']
     is_pozisyonu = data['workPosition']
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     query = """
@@ -257,7 +255,7 @@ def update_calisan():
     maas = data['salary']
     is_pozisyonu = data['workPosition']
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     query = """
@@ -287,7 +285,7 @@ def update_calisan():
 
 @app.route('/delete_calisan/<calisan_id>', methods=['DELETE'])
 def delete_calisan(calisan_id):
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     cursor.execute("SELECT is_pozisyonu FROM calisan WHERE calisan_id = %s", (calisan_id,))
@@ -421,7 +419,7 @@ def add_ders():
     talep = data['demand']
     ogretmen_id = data.get('teacherId')
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     if ogretmen_id:
@@ -452,7 +450,7 @@ def update_ders():
     talep = data['demand']
     ogretmen_id = data.get('teacherId')
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     query = """
@@ -469,17 +467,11 @@ def update_ders():
 
 @app.route('/delete_ders/<ders_id>', methods=['DELETE'])
 def delete_ders(ders_id):
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     malzeme_silme_sorgusu = "DELETE FROM ders_malzemeleri WHERE ders_id = %s"
     cursor.execute(malzeme_silme_sorgusu, (ders_id,))
-
-    cursor.execute("SELECT ogretmen_id FROM ders WHERE ders_id = %s", (ders_id,))
-    result = cursor.fetchone()
-    if result:
-        ogretmen_id = result[0]
-        cursor.execute("UPDATE ogretmen SET verdigi_ders = NULL WHERE ogretmen_id = %s AND verdigi_ders = %s", (ogretmen_id, ders_id))
 
     ders_silme_sorgusu = "DELETE FROM ders WHERE ders_id = %s"
     cursor.execute(ders_silme_sorgusu, (ders_id,))
@@ -535,7 +527,7 @@ def add_malzeme():
     minimum_stok_miktari = data['minimumQuantity']
     fiyat = data['cost']
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     query = """
@@ -559,7 +551,7 @@ def update_malzeme():
     yeni_minimum_stok_miktari = data.get('minimumQuantity')
     yeni_fiyat = data.get('cost')
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     update_parts = []
@@ -595,7 +587,7 @@ def update_malzeme():
 
 @app.route('/delete_malzeme/<malzeme_id>', methods=['DELETE'])
 def delete_malzeme(malzeme_id):
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     malzeme_ders_silme_sorgusu = "DELETE FROM ders_malzemeleri WHERE malzeme_id = %s"
@@ -679,7 +671,7 @@ def add_gider():
     gider_turu = data['type']
     tarih = data['date']
 
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='schooldb')
     cursor = conn.cursor()
 
     query = """

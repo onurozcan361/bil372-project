@@ -1,3 +1,7 @@
+CREATE database schooldb;
+
+USE schooldb;
+
 CREATE TABLE veli (
     veli_id char(10) PRIMARY KEY,
     veli_adi varchar(50),
@@ -108,3 +112,69 @@ CREATE TABLE ogretmen_musaitlik_zamani (
     ogretmen_id char(10),
     FOREIGN KEY (ogretmen_id) REFERENCES ogretmen(ogretmen_id)
 );
+
+ALTER TABLE ogrenci
+    ADD CONSTRAINT fk_ogrenci_veli
+    FOREIGN KEY (ogrenci_veli_id)
+    REFERENCES veli(veli_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE ogrenci_alir_ders
+    ADD CONSTRAINT fk_ogrenci_alir_ders_ogrenci
+    FOREIGN KEY (ogrenci_id)
+    REFERENCES ogrenci(ogrenci_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE ders_malzemeleri
+    ADD CONSTRAINT fk_ders_malzemeleri_ders
+    FOREIGN KEY (ders_id)
+    REFERENCES ders(ders_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE ders_malzemeleri
+    ADD CONSTRAINT fk_ders_malzemeleri_malzeme
+    FOREIGN KEY (malzeme_id)
+    REFERENCES malzeme(malzeme_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE ogretmen
+    ADD CONSTRAINT fk_ogretmen_calisan
+    FOREIGN KEY (ogretmen_id)
+    REFERENCES calisan(calisan_id)
+    ON DELETE CASCADE;
+    
+ALTER TABLE idari_personel
+    ADD CONSTRAINT fk_idari_personel_calisan
+    FOREIGN KEY (idari_personel_id)
+    REFERENCES calisan(calisan_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE temizlik_gorevlisi
+    ADD CONSTRAINT fk_temizlik_gorevlisi_calisan
+    FOREIGN KEY (temizlik_gorevlisi_id)
+    REFERENCES calisan(calisan_id)
+    ON DELETE CASCADE;
+    
+ALTER TABLE ogretmen_musaitlik_zamani
+    ADD CONSTRAINT fk_ogretmen_musaitlik_ogretmen
+    FOREIGN KEY (ogretmen_id)
+    REFERENCES ogretmen(ogretmen_id)
+    ON DELETE CASCADE;
+    
+ALTER TABLE ogrenci_musaitlik_zamani
+    ADD CONSTRAINT fk_ogrenci_musaitlik_ogrenci
+    FOREIGN KEY (ogrenci_id)
+    REFERENCES ogrenci(ogrenci_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE ders
+    ADD CONSTRAINT fk_ders_ogretmen
+    FOREIGN KEY (ogretmen_id)
+    REFERENCES ogretmen(ogretmen_id)
+    ON DELETE CASCADE;
+
+ALTER TABLE ogrenci_alir_ders
+    ADD CONSTRAINT fk_ogrenci_alir_ders_ders
+    FOREIGN KEY (ders_id)
+    REFERENCES ders(ders_id)
+    ON DELETE CASCADE;

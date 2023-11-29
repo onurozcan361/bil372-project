@@ -6,7 +6,7 @@ from mysql.connector import Error
 fake = Faker()
 
 host = 'localhost'
-database = 'okul'
+database = 'schooldb'
 user = 'root'
 password = '23644470022Onurozcan.'
 
@@ -285,9 +285,9 @@ if __name__ == '__main__':
                 insert_query_ogretmen = "INSERT INTO ogretmen (ogretmen_id) VALUES (%s)"
                 insert_data(connection, insert_query_ogretmen, (ogretmen['calisan_id'],))
 
-                ders_idleri = ['MAT1', 'MAT2', 'ING1', 'ING2', 'ALM1', 'ALM2', 'RK1', 'RK2']
+                ders_idleri = ['MAT1', 'MAT2', 'ING1', 'ING2', 'ALM1', 'ALM2', 'RK1', 'RK2', 'SAT1', 'SAT2', 'WBT1', 'WB2']
                 ders_adlari = ['Matematik 1', 'Matematik 2', 'Ingilizce 1', 'Ingilizce 2', 'Almanca 1', 'Almanca 2',
-                               'Robotik Kodlama 1', 'Robotik Kodlama 2']
+                               'Robotik Kodlama 1', 'Robotik Kodlama 2', 'Satranc 1', 'Satranc 2', 'Web Tasarim - 1', 'Web Tasarim - 2']
                 for ders_id, ders_adi in zip(ders_idleri, ders_adlari):
                     secilen_ogretmen = random.choice(ogretmenler)
                     ders = create_ders(ders_id, ders_adi, secilen_ogretmen['calisan_id'])

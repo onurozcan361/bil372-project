@@ -10,6 +10,7 @@ import {
 import { GridColDef, DataGrid } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { Expenditure } from '../Types';
+import ApiClient from '../ApiClient';
 
 const initExpenditure = {
   id: '',
@@ -28,8 +29,6 @@ interface ExpenditureTabProps {
   expenditures: Expenditure[];
 }
 const ExpeditureTab = (props: ExpenditureTabProps) => {
-  const [selectedExpenditure, setSelectedExpenditure] = useState<Expenditure>(initExpenditure);
-  const [openUpdateDialog, setOpenUpdateDialog] = useState<boolean>(false);
   const [expenditures, setExpenditures] = useState<Expenditure[]>(props.expenditures);
 
   const [openAddDialog, setOpenAddDialog] = useState<boolean>(false);
@@ -86,47 +85,23 @@ const ExpeditureTab = (props: ExpenditureTabProps) => {
     }
   }, [expenditures, selectedFilter]);
 
-  const handleUpdateClick = (expenditure: Expenditure) => {
-    const updatedExpenditure: Expenditure = expenditures.find(
-      (object) => object.id === expenditure.id
-    ) as Expenditure;
-    setSelectedExpenditure(updatedExpenditure);
-    setOpenUpdateDialog(true);
-  };
-
-  const handleCloseUpdateDialog = () => {
-    setOpenUpdateDialog(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setSelectedExpenditure({ ...selectedExpenditure, [name]: value });
-  };
-
-  const handleAddExpenditureSave = () => {
+  const handleAddExpenditureSave = async () => {
     const isExpenditureExist = expenditures.some(
       (expenditure) => expenditure.id === newExpenditure.id
     );
     if (isExpenditureExist) {
       setError('Hata: Aynı ID ile gider zaten mevcut.');
     } else {
-      setExpenditures((prevExpenditures) => [...prevExpenditures, newExpenditure as Expenditure]);
-      setNewExpenditure(initExpenditure);
-      setOpenAddDialog(false);
+      try {
+        const response = await ApiClient.post('/add_gider', newExpenditure);
+        console.log(response);
+        setExpenditures((prevExpenditures) => [...prevExpenditures, newExpenditure as Expenditure]);
+        setNewExpenditure(initExpenditure);
+        setOpenAddDialog(false);
+      } catch (error) {
+        console.error(error);
+      }
     }
-  };
-
-  const handleSaveChanges = () => {
-    // Buradan backende kaydedicez yapılan değişiklikleri
-    console.log('Değişiklikler kaydedildi:', selectedExpenditure);
-    setExpenditures((prevExpenditures) =>
-      prevExpenditures.map((expenditure) =>
-        expenditure.id === selectedExpenditure.id
-          ? { ...expenditure, ...selectedExpenditure }
-          : expenditure
-      )
-    );
-    setOpenUpdateDialog(false);
   };
 
   const handleAddExpenditureClick = () => {
@@ -152,24 +127,21 @@ const ExpeditureTab = (props: ExpenditureTabProps) => {
       headerName: 'İşlemler',
       width: 200,
       renderCell: (params) => {
-        const handleEditClick = () => {
-          handleUpdateClick(params.row);
-        };
-
-        const handleDeleteClick = () => {
+        const handleDeleteClick = async () => {
           try {
+            const response = await ApiClient.delete(`/delete_gider/${params.row.id}`);
+            console.log(response);
+            const updatedExpenditures = expenditures.filter(
+              (expenditure) => expenditure.id !== params.row.id
+            );
+            setExpenditures(updatedExpenditures);
           } catch (error) {
             console.error(error);
           }
-          const updatedExpenditures = expenditures.filter(
-            (expenditure) => expenditure.id !== params.row.id
-          );
-          setExpenditures(updatedExpenditures);
         };
 
         return (
           <>
-            <Button onClick={handleEditClick}>Düzenle</Button>
             <Button onClick={handleDeleteClick} color="error">
               Sil
             </Button>
@@ -227,33 +199,6 @@ const ExpeditureTab = (props: ExpenditureTabProps) => {
         </DialogActions>
       </Dialog>
       <DataGrid columns={columns} rows={filteredExpenditures}></DataGrid>
-      <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
-        <DialogTitle>Gider Düzenle</DialogTitle>
-        <DialogContent>
-          {selectedExpenditure && (
-            <>
-              {Object.keys(selectedExpenditure).map((key: string) => {
-                return (
-                  <TextField
-                    key={key}
-                    label={fieldLabels[key as keyof Expenditure]}
-                    name={key}
-                    value={selectedExpenditure[key as keyof Expenditure]}
-                    onChange={handleInputChange}
-                    disabled={key === 'id'}
-                    fullWidth
-                    sx={{ marginTop: '16px' }}
-                  ></TextField>
-                );
-              })}
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseUpdateDialog}>İptal</Button>
-          <Button onClick={handleSaveChanges}>Kaydet</Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };
