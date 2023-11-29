@@ -523,64 +523,6 @@ def get_ders():
     # Sonuçları JSON formatına dönüştürün
     return jsonify(ders_list)
 
-@app.route('/add_ogrenci_musaitlik', methods=['POST'])
-def add_ogrenci_musaitlik():
-    data = request.json
-    ogrenci_id = data['id']
-    baslangic_saati = data['startTime']
-    bitis_saati = data['endTime']
-
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
-    cursor = conn.cursor()
-
-    query = """
-    INSERT INTO ogrenci_musaitlik (ogrenci_id, baslangic_saati, bitis_saati)
-    VALUES (%s, %s, %s)
-    """
-    cursor.execute(query, (ogrenci_id, baslangic_saati, bitis_saati))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify(success=True, message="Öğrenci müsaitlik zamanı başarıyla eklendi.")
-
-@app.route('/update_ogrenci_musaitlik', methods=['POST'])
-def update_ogrenci_musaitlik():
-    data = request.json
-    ogrenci_id = data['id']
-    baslangic_saati = data['startTime']
-    bitis_saati = data['endTime']
-
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
-    cursor = conn.cursor()
-
-    query = """
-    UPDATE ogrenci_musaitlik SET baslangic_saati=%s, bitis_saati=%s 
-    WHERE ogrenci_id=%s
-    """
-    cursor.execute(query, (baslangic_saati, bitis_saati, ogrenci_id))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify(success=True, message="Öğrenci müsaitlik bilgisi başarıyla güncellendi.")
-
-@app.route('/delete_ogrenci_musaitlik/<ogrenci_id>', methods=['DELETE'])
-def delete_ogrenci_musaitlik(ogrenci_id):
-    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
-    cursor = conn.cursor()
-
-    query = "DELETE FROM ogrenci_musaitlik WHERE ogrenci_id = %s"
-    cursor.execute(query, (ogrenci_id,))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify(success=True, message="Öğrenci müsaitlik bilgisi başarıyla silindi.")
-
 
 
 @app.route('/add_malzeme', methods=['POST'])
@@ -692,7 +634,118 @@ def get_malzeme():
 
     return jsonify(malzeme_list)
 
+@app.route('/get_gider', methods=['GET'])
+def get_gider():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
 
+    query = "SELECT * FROM gider"
+    cursor.execute(query)
+
+    raw_giderler = cursor.fetchall()
+
+    gider_list = []
+    for gider in raw_giderler:
+        gider_data = {
+            "id": gider['gider_id'],
+            "type": gider['gider_turu'],
+            "fee": gider['tutar'],
+            "date": gider['tarih'].strftime('%Y-%m-%d')
+        }
+        gider_list.append(gider_data)
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(gider_list)
+
+@app.route('/delete_gider<gider_id>', methods=['DELETE'])
+def delete_gider(gider_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    malzeme_ders_silme_sorgusu = "DELETE gider WHERE gider_id = %s"
+    cursor.execute(malzeme_ders_silme_sorgusu, (gider_id,))
+
+    return jsonify(success=True, message="Gider başarıyla silindi.")
+
+
+@app.route('/add_gider', methods=['POST'])
+def add_malzeme():
+    data = request.json
+    gider_id = data['id']
+    tutar = data['fee']
+    gider_turu = data['type']
+    tarih = data['date']
+
+    conn = mysql.connector.connect(user='root', password='23644470022Onurozcan.', host='localhost', database='okul')
+    cursor = conn.cursor()
+
+    query = """
+    INSERT INTO gider (gider_id, tutar, gider_turu, tarih)
+    VALUES (%s, %s, %s, %s)
+    """
+    cursor.execute(query, (gider_id, tutar, gider_turu, tarih))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify(success=True, message="Malzeme başarıyla eklendi.")
+
+@app.route('/get_teacher_musaitlik_zamani/<teacher_id>', methods=['GET'])
+def get_teacher_musaitlik_zamani(teacher_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+    SELECT omz.musaitlik_zamani_id AS id, omz.gun AS day, omz.baslangic_saati AS startTime, 
+    omz.bitis_saati AS endTime, omz.ogretmen_id AS teacherId
+    FROM ogretmen_musaitlik_zamani omz
+    WHERE omz.ogretmen_id = %s
+    """
+    cursor.execute(query, (teacher_id,))
+    raw_musaitlik = cursor.fetchall()
+
+    teacher_available_times = [{
+        "id": item["id"],
+        "day": item["day"],
+        "startTime": item["startTime"].strftime('%H:%M'),
+        "endTime": item["endTime"].strftime('%H:%M'),
+        "teacherId": item["teacherId"]
+    } for item in raw_musaitlik]
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(teacher_available_times)
+
+@app.route('/get_student_musaitlik_zamani/<student_id>', methods=['GET'])
+def get_student_musaitlik_zamani(student_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+    SELECT omz.musaitlik_zamani_id AS id, omz.gun AS day, omz.baslangic_saati AS startTime, 
+    omz.bitis_saati AS endTime, omz.ogrenci_id AS studentId
+    FROM ogrenci_musaitlik_zamani omz
+    WHERE omz.ogrenci_id = %s
+    """
+    cursor.execute(query, (student_id,))
+    raw_musaitlik = cursor.fetchall()
+
+    student_available_times = [{
+        "id": item["id"],
+        "day": item["day"],
+        "startTime": item["startTime"].strftime('%H:%M'),
+        "endTime": item["endTime"].strftime('%H:%M'),
+        "studentId": item["studentId"]
+    } for item in raw_musaitlik]
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(student_available_times)
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port=8080)

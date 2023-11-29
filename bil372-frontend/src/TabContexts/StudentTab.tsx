@@ -7,8 +7,6 @@ import {
   TextField,
 } from '@mui/material';
 import { useState } from 'react';
-import dummyData from '../dummy.json';
-import dummyVeli from '../dummyVeli.json';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Custodian, Student } from '../Types';
 import ApiClient from '../ApiClient';

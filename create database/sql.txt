@@ -22,7 +22,7 @@ CREATE Table ogrenci (
 
 CREATE TABLE gider (
     gider_id int PRIMARY KEY AUTO_INCREMENT,
-    tutar LONG,
+    tutar BIGINT,
     gider_turu varchar(20),
     tarih date
 );

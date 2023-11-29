@@ -53,28 +53,30 @@ const StudentAvailableTimesTabTable = (props: StudentAvailableTimesProps) => {
   }, [props.studentAvailableTimes]);
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            {daysOfWeek.map((day, index) => (
-              <TableCell key={index}>{day}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {timeSlots.map((timeSlot, rowIndex) => (
-            <TableRow key={rowIndex}>
-              <TableCell>{timeSlot}</TableCell>
-              {schedule.map((row, colIndex) => (
-                <TableCell key={colIndex}>{schedule[colIndex][rowIndex]}</TableCell>
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              {daysOfWeek.map((day, index) => (
+                <TableCell key={index}>{day}</TableCell>
               ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {timeSlots.map((timeSlot, rowIndex) => (
+              <TableRow key={rowIndex}>
+                <TableCell>{timeSlot}</TableCell>
+                {schedule.map((row, colIndex) => (
+                  <TableCell key={colIndex}>{schedule[colIndex][rowIndex]}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 };
 

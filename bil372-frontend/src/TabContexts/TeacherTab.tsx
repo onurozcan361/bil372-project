@@ -7,7 +7,6 @@ import {
   Snackbar,
   TextField,
 } from '@mui/material';
-import dummyData from '../dummyOgretmen.json';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Teacher } from '../Types';
 import { useState } from 'react';

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Stock } from '../Types';
-import dummyMalzeme from '../dummyMalzeme.json';
 import {
   Button,
   Dialog,
@@ -172,9 +171,13 @@ const StockTab = (props: StockTab) => {
           <Button onClick={handleAddStockSave}>Kaydet</Button>
         </DialogActions>
       </Dialog>
-      <DataGrid columns={columns} rows={stocks} getRowClassName={(params) =>
-      params.row.quantity < params.row.minimumQuantity ? 'row-style' : ''
-      }></DataGrid>
+      <DataGrid
+        columns={columns}
+        rows={stocks}
+        getRowClassName={(params) =>
+          params.row.quantity < params.row.minimumQuantity ? 'row-style' : ''
+        }
+      ></DataGrid>
       <Dialog open={openUpdateDialog} onClose={handleCloseUpdateDialog}>
         <DialogTitle>Stok Duzenle</DialogTitle>
         <DialogContent>
